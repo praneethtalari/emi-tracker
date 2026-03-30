@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>EMI Tracker</title>
+  <title>EMI Tracker V2</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -9,8 +9,8 @@
 <h1>💰 EMI Tracker</h1>
 
 <div class="dashboard">
-  <p>Total Paid: ₹<span id="totalPaid">0</span></p>
-  <p>Total Remaining: ₹<span id="totalRemaining">0</span></p>
+  <div>Total Paid: ₹<span id="totalPaid">0</span></div>
+  <div>Total Remaining: ₹<span id="totalRemaining">0</span></div>
 </div>
 
 <div class="form">
@@ -18,7 +18,7 @@
   <input id="amount" type="number" placeholder="Total Amount">
   <input id="emi" type="number" placeholder="EMI">
   <input id="start" type="date">
-  <input id="tenure" type="number" placeholder="Tenure (months)">
+  <input id="tenure" type="number" placeholder="Tenure">
   <button onclick="addLoan()">Add Loan</button>
 </div>
 
