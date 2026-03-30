@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>EMI Tracker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>💰 EMI Tracker</h1>
+
+<div class="dashboard">
+  <p>Total Paid: ₹<span id="totalPaid">0</span></p>
+  <p>Total Remaining: ₹<span id="totalRemaining">0</span></p>
+</div>
+
+<div class="form">
+  <input id="name" placeholder="Loan Name">
+  <input id="amount" type="number" placeholder="Total Amount">
+  <input id="emi" type="number" placeholder="EMI">
+  <input id="start" type="date">
+  <input id="tenure" type="number" placeholder="Tenure (months)">
+  <button onclick="addLoan()">Add Loan</button>
+</div>
+
+<div id="loans"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
