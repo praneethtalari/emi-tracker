@@ -17,84 +17,70 @@
 
 <header class="header">
   <h1>💰 EMI Tracker</h1>
-
-  <div class="header-actions">
-    <button class="ghost" onclick="showStrategy()">📊 Strategy</button>
-    <button class="primary" onclick="login()">🔐 Login</button>
-  </div>
+  <button onclick="login()">Login</button>
 </header>
 
-<!-- 👤 Profile -->
+<!-- 👤 PROFILE -->
 <div id="userProfile" class="user-profile hidden">
-  <div class="user-left">
-    <img id="userPic" class="avatar">
-    <div>
-      <div id="userName" class="user-name"></div>
-      <div id="userEmail" class="email"></div>
-    </div>
+  <img id="userPic" class="avatar">
+  <div>
+    <div id="userName"></div>
+    <div id="userEmail"></div>
   </div>
-  <button class="ghost" onclick="logout()">Logout</button>
+  <button onclick="logout()">Logout</button>
 </div>
 
-<!-- 📊 Dashboard -->
-<section class="dashboard">
-  <div class="card stat">
-    <div class="label">Paid</div>
-    <div class="value">₹<span id="totalPaid">0</span></div>
-  </div>
-  <div class="card stat">
-    <div class="label">Remaining</div>
-    <div class="value">₹<span id="totalRemaining">0</span></div>
-  </div>
-  <div class="card stat">
-    <div class="label">EMIs Left</div>
-    <div class="value"><span id="monthsLeft">0</span></div>
-  </div>
-  <div class="card stat">
-    <div class="label">Debt-Free</div>
-    <div class="value small" id="debtFreeDate">-</div>
-  </div>
-</section>
+<!-- 📱 APP SCREENS -->
+<div class="screens">
 
-<!-- ➕ Add Loan -->
-<section class="glass form">
-  <h3>Add Loan</h3>
-  <div class="grid">
-    <input id="name" placeholder="Loan Name">
-    <input id="amount" type="number" placeholder="Total Amount">
-    <input id="emi" type="number" placeholder="EMI">
-    <input id="interest" type="number" placeholder="Interest %">
-    <input id="start" type="date">
-    <input id="tenure" type="number" placeholder="Tenure (months)">
-  </div>
-  <button class="primary full" onclick="addLoan()">Add Loan</button>
-</section>
+  <!-- 🏠 DASHBOARD -->
+  <section id="dashboard" class="screen active">
+    <div class="dashboard">
+      <div class="card">Paid ₹<span id="totalPaid">0</span></div>
+      <div class="card">Remaining ₹<span id="totalRemaining">0</span></div>
+      <div class="card">EMIs <span id="monthsLeft">0</span></div>
+      <div class="card">Debt-Free <span id="debtFreeDate">-</span></div>
+    </div>
 
-<!-- 💸 Prepayment -->
-<section class="glass prepay">
-  <h3>💸 Prepayment Simulator</h3>
-  <div class="row">
-    <input id="extra" type="number" placeholder="Extra per month">
-    <button class="primary" onclick="simulate()">Simulate</button>
-  </div>
-  <p id="result" class="muted"></p>
-</section>
+    <div class="glass">
+      <h3>Add Loan</h3>
+      <input id="name" placeholder="Loan Name">
+      <input id="amount" type="number" placeholder="Amount">
+      <input id="emi" type="number" placeholder="EMI">
+      <input id="interest" type="number" placeholder="Interest %">
+      <input id="start" type="date">
+      <input id="tenure" type="number" placeholder="Months">
+      <button onclick="addLoan()">Add</button>
+    </div>
 
-<!-- 📊 Charts -->
-<section class="charts">
-  <div class="glass chart-card">
-    <h4>Overall</h4>
+    <div class="glass">
+      <h3>💸 Prepayment</h3>
+      <input id="extra" type="number" placeholder="Extra/month">
+      <button onclick="simulate()">Simulate</button>
+      <p id="result"></p>
+    </div>
+  </section>
+
+  <!-- 📄 LOANS -->
+  <section id="loansScreen" class="screen">
+    <h3>Your Loans</h3>
+    <div id="loans"></div>
+  </section>
+
+  <!-- 📊 CHARTS -->
+  <section id="chartsScreen" class="screen">
     <canvas id="chart"></canvas>
-  </div>
-
-  <div class="glass chart-card">
-    <h4>Amortization</h4>
     <canvas id="amortChart"></canvas>
-  </div>
-</section>
+  </section>
 
-<!-- 📄 Loans -->
-<section id="loans" class="loans"></section>
+</div>
+
+<!-- 📱 BOTTOM NAV -->
+<div class="bottom-nav">
+  <button onclick="switchTab('dashboard')">🏠</button>
+  <button onclick="switchTab('loansScreen')">📄</button>
+  <button onclick="switchTab('chartsScreen')">📊</button>
+</div>
 
 <script src="app.js"></script>
 </body>
