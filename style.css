@@ -1,175 +1,86 @@
-:root{
-  --bg:#0b1220;
-  --card:rgba(255,255,255,0.08);
-  --card-strong:rgba(255,255,255,0.12);
-  --text:#e5e7eb;
-  --muted:#94a3b8;
-  --primary:#22c55e;
-  --danger:#ef4444;
-}
-
-*{box-sizing:border-box}
-
-body{
+body {
   margin:0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
-  background: radial-gradient(1200px 600px at 20% -10%, #1f2937 0%, transparent 50%),
-              linear-gradient(135deg,#0b1220,#111827);
-  color:var(--text);
-  padding:16px;
-}
-
-.header{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  position:sticky;
-  top:0;
-  backdrop-filter: blur(10px);
-  padding:10px 0;
-  z-index:10;
-}
-
-.header h1{ margin:0; font-size:22px }
-
-.header-actions button{ margin-left:8px }
-
-button{
-  border:none;
-  border-radius:10px;
-  padding:10px 14px;
-  cursor:pointer;
-  transition:.2s;
-}
-
-button.primary{
-  background:linear-gradient(135deg,#22c55e,#16a34a);
+  font-family: Arial;
+  background:#0f172a;
   color:white;
 }
 
-button.ghost{
-  background:transparent;
-  color:var(--text);
-  border:1px solid rgba(255,255,255,0.15);
-}
-
-button.full{ width:100% }
-
-button:hover{ transform:translateY(-1px) scale(1.02) }
-
-.user-profile{
+.header {
   display:flex;
   justify-content:space-between;
+  padding:10px;
+}
+
+.user-profile {
+  display:flex;
   align-items:center;
-  background:var(--card);
-  border:1px solid rgba(255,255,255,0.1);
-  padding:12px;
-  border-radius:14px;
-  margin:10px 0;
+  gap:10px;
+  padding:10px;
 }
 
-.user-left{ display:flex; align-items:center }
-
-.avatar{
-  width:44px;
-  height:44px;
+.avatar {
+  width:40px;
+  height:40px;
   border-radius:50%;
-  margin-right:10px;
 }
 
-.user-name{ font-weight:600 }
-.email{ font-size:12px; color:var(--muted) }
-.hidden{ display:none }
+.hidden { display:none; }
 
-.dashboard{
-  display:grid;
-  grid-template-columns: repeat(2,1fr);
-  gap:12px;
+/* 📱 SCREENS */
+.screens {
+  padding-bottom:70px;
 }
 
-.card{
-  background:var(--card);
-  border:1px solid rgba(255,255,255,0.1);
-  border-radius:16px;
-  padding:14px;
-  backdrop-filter: blur(12px);
+.screen {
+  display:none;
+  padding:15px;
 }
 
-.stat .label{ color:var(--muted); font-size:12px }
-.stat .value{ font-size:20px; font-weight:700 }
-.stat .value.small{ font-size:14px }
-
-.glass{
-  background:var(--card);
-  border:1px solid rgba(255,255,255,0.1);
-  border-radius:16px;
-  padding:14px;
-  margin-top:14px;
-  backdrop-filter: blur(12px);
+.screen.active {
+  display:block;
+  animation:fade 0.3s ease;
 }
 
-.grid{
+@keyframes fade {
+  from {opacity:0;}
+  to {opacity:1;}
+}
+
+/* 📊 CARDS */
+.dashboard {
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:10px;
 }
 
-input{
+.card {
+  background:#1e293b;
+  padding:15px;
+  border-radius:10px;
+}
+
+/* GLASS */
+.glass {
+  background:#1e293b;
+  padding:15px;
+  margin-top:10px;
+  border-radius:10px;
+}
+
+/* 📱 BOTTOM NAV */
+.bottom-nav {
+  position:fixed;
+  bottom:0;
   width:100%;
-  padding:10px;
-  border-radius:10px;
-  border:1px solid rgba(255,255,255,0.15);
-  background:rgba(255,255,255,0.06);
-  color:white;
-}
-
-.row{ display:flex; gap:10px }
-
-.charts{
-  display:grid;
-  grid-template-columns:1fr;
-  gap:14px;
-  margin-top:14px;
-}
-
-.chart-card canvas{
-  background:white;
-  border-radius:10px;
-  padding:8px;
-}
-
-.loans{ margin-top:10px }
-
-.loan{
-  background:var(--card);
-  border:1px solid rgba(255,255,255,0.1);
-  padding:14px;
-  margin-top:12px;
-  border-radius:16px;
-  animation:fade .25s ease;
-}
-
-.loan h3{ margin:0 0 8px 0 }
-
-.emi{
   display:flex;
-  justify-content:space-between;
-  font-size:13px;
-  padding:6px 0;
+  justify-content:space-around;
+  background:#020617;
+  padding:10px 0;
 }
 
-.overdue{ color:var(--danger) }
-
-@keyframes fade{
-  from{opacity:0; transform:translateY(6px)}
-  to{opacity:1; transform:translateY(0)}
-}
-
-.muted{ color:var(--muted) }
-
-/* tablet */
-@media(min-width:700px){
-  .dashboard{ grid-template-columns: repeat(4,1fr); }
-  .charts{ grid-template-columns:1fr 1fr; }
-  .grid{ grid-template-columns:repeat(3,1fr); }
+.bottom-nav button {
+  background:none;
+  border:none;
+  color:white;
+  font-size:20px;
 }
