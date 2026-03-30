@@ -1,10 +1,59 @@
-let loans = JSON.parse(localStorage.getItem("loans")) || [];
+// 🔥 FIREBASE CONFIG
+const firebaseConfig = {
+  apiKey: "AIzaSyD8qs6TDKkN3-vdV7Xa3nA0YzydHklB3gQ",
+  authDomain: "emi-tracker-9081d.firebaseapp.com",
+  projectId: "emi-tracker-9081d",
+  storageBucket: "emi-tracker-9081d.firebasestorage.app",
+  messagingSenderId: "82834596580",
+  appId: "1:82834596580:web:a31a74f033a1c8f7a842f1",
+  measurementId: "G-TWZBXKF6V3"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+let user = null;
+let loans = [];
 let chart;
 
-function save() {
-  localStorage.setItem("loans", JSON.stringify(loans));
+// 🔐 LOGIN
+function login() {
+  const provider = new firebase.auth.GoogleAuthProvider();
+
+  auth.signInWithPopup(provider).then(result => {
+    if (result.user.email !== "praneethtalari1@gmail.com") {
+      alert("Access Denied");
+      auth.signOut();
+      return;
+    }
+
+    user = result.user;
+    loadData();
+  });
 }
 
+// ☁️ LOAD DATA
+function loadData() {
+  db.collection("loans").doc(user.uid).get().then(doc => {
+    if (doc.exists) {
+      loans = doc.data().loans;
+    }
+    render();
+  });
+}
+
+// ☁️ SAVE DATA
+function save() {
+  if (!user) return;
+
+  db.collection("loans").doc(user.uid).set({
+    loans: loans
+  });
+}
+
+// 📅 GENERATE EMI DATES
 function generateDates(start, tenure) {
   let dates = [];
   let d = new Date(start);
@@ -18,6 +67,7 @@ function generateDates(start, tenure) {
   return dates;
 }
 
+// ➕ ADD LOAN
 function addLoan() {
   const loan = {
     name: name.value,
@@ -39,56 +89,54 @@ function addLoan() {
   render();
 }
 
+// ✅ TOGGLE EMI
 function togglePayment(i, j) {
   loans[i].payments[j].paid = !loans[i].payments[j].paid;
   save();
   render();
 }
 
-function calculateMonthsLeft() {
-  let remaining = 0;
-  loans.forEach(loan => {
-    remaining += loan.payments.filter(p => !p.paid).length;
-  });
-  return remaining;
-}
-
-function renderChart(totalPaid, totalRemaining) {
-  const ctx = document.getElementById("overallChart");
+// 📊 RENDER CHART
+function renderChart(paid, remaining) {
+  const ctx = document.getElementById("chart");
 
   if (chart) chart.destroy();
 
   chart = new Chart(ctx, {
-    type: 'doughnut',
+    type: "doughnut",
     data: {
-      labels: ['Paid', 'Remaining'],
+      labels: ["Paid", "Remaining"],
       datasets: [{
-        data: [totalPaid, totalRemaining],
-        backgroundColor: ['#22c55e', '#ef4444']
+        data: [paid, remaining],
+        backgroundColor: ["#22c55e", "#ef4444"]
       }]
     }
   });
 }
 
+// 🔄 RENDER UI
 function render() {
   let container = document.getElementById("loans");
   container.innerHTML = "";
 
   let totalPaid = 0;
   let totalRemaining = 0;
+  let monthsLeft = 0;
 
   loans.forEach((loan, i) => {
-    let paid = loan.payments.filter(p => p.paid).length * loan.emi;
+    let paidCount = loan.payments.filter(p => p.paid).length;
+    let paid = paidCount * loan.emi;
     let percent = (paid / loan.amount) * 100;
 
     totalPaid += paid;
     totalRemaining += loan.amount - paid;
+    monthsLeft += loan.payments.filter(p => !p.paid).length;
 
     let html = `
     <div class="loan">
       <h3>${loan.name}</h3>
       <p>₹${paid} / ₹${loan.amount}</p>
-      <p>${loan.payments.filter(p=>p.paid).length}/${loan.tenure} EMIs paid</p>
+      <p>${paidCount}/${loan.tenure} EMIs</p>
 
       <div class="progress">
         <div class="progress-bar" style="width:${percent}%"></div>
@@ -99,14 +147,14 @@ function render() {
       let overdue = !p.paid && new Date(p.date) < new Date();
 
       html += `
-      <div class="emi ${overdue ? 'overdue' : ''}">
+      <div class="emi ${overdue ? "overdue" : ""}">
         <div>
           <input type="checkbox"
             ${p.paid ? "checked" : ""}
             onclick="togglePayment(${i}, ${j})">
           ${p.date}
         </div>
-        <div>${overdue ? "❌ Overdue" : "₹"+loan.emi}</div>
+        <div>${overdue ? "❌ Overdue" : "₹" + loan.emi}</div>
       </div>`;
     });
 
@@ -116,11 +164,7 @@ function render() {
 
   document.getElementById("totalPaid").innerText = totalPaid;
   document.getElementById("totalRemaining").innerText = totalRemaining;
-
-  let monthsLeft = calculateMonthsLeft();
   document.getElementById("monthsLeft").innerText = monthsLeft;
 
   renderChart(totalPaid, totalRemaining);
 }
-
-render();
