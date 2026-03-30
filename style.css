@@ -1,84 +1,75 @@
 body {
   font-family: Arial;
-  background: linear-gradient(135deg, #0f172a, #1e293b);
+  background: linear-gradient(135deg,#0f172a,#1e293b);
   color: white;
   padding: 20px;
 }
 
-h1 {
-  text-align: center;
-}
+h1 { text-align:center; }
 
-.top-bar {
-  text-align: center;
-}
+.top-bar { text-align:center; }
 
 button {
-  padding: 10px;
-  margin: 10px;
-  border-radius: 8px;
-  border: none;
-  background: #22c55e;
-  color: white;
-  cursor: pointer;
-  transition: 0.3s;
+  padding:10px;
+  margin:10px;
+  border:none;
+  border-radius:8px;
+  background:#22c55e;
+  color:white;
+  cursor:pointer;
+  transition:.3s;
 }
-
-button:hover {
-  transform: scale(1.05);
-}
+button:hover { transform:scale(1.05); }
 
 .dashboard {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:space-around;
 }
 
 .card {
-  background: rgba(255,255,255,0.1);
-  backdrop-filter: blur(10px);
-  padding: 15px;
-  margin: 10px;
-  border-radius: 12px;
+  background:rgba(255,255,255,0.1);
+  backdrop-filter:blur(10px);
+  padding:15px;
+  margin:10px;
+  border-radius:12px;
 }
 
 .glass {
-  background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(10px);
-  padding: 15px;
-  border-radius: 12px;
-  margin-top: 20px;
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(10px);
+  padding:15px;
+  border-radius:12px;
+  margin-top:20px;
 }
 
 .loan {
-  background: rgba(255,255,255,0.08);
-  padding: 15px;
-  margin-top: 15px;
-  border-radius: 12px;
-  animation: fadeIn 0.4s ease;
+  background:rgba(255,255,255,0.08);
+  padding:15px;
+  margin-top:15px;
+  border-radius:12px;
 }
 
 .progress {
-  background: #334155;
-  height: 10px;
-  border-radius: 10px;
+  background:#334155;
+  height:10px;
+  border-radius:10px;
 }
 
 .progress-bar {
-  height: 10px;
-  background: #22c55e;
+  height:10px;
+  background:#22c55e;
 }
 
 .emi {
-  display: flex;
-  justify-content: space-between;
+  display:flex;
+  justify-content:space-between;
 }
 
-.overdue {
-  color: red;
-}
+.overdue { color:red; }
 
-@keyframes fadeIn {
-  from {opacity:0; transform: translateY(10px);}
-  to {opacity:1; transform: translateY(0);}
+canvas {
+  background:white;
+  margin-top:20px;
+  border-radius:10px;
 }
