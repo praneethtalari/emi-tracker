@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>EMI Tracker Pro</title>
   <link rel="stylesheet" href="style.css">
 
@@ -14,44 +15,86 @@
 </head>
 <body>
 
-<h1>💰 EMI Tracker</h1>
+<header class="header">
+  <h1>💰 EMI Tracker</h1>
 
-<div class="top-bar">
-  <button onclick="login()">🔐 Login</button>
-  <button onclick="showStrategy()">📊 Strategy</button>
+  <div class="header-actions">
+    <button class="ghost" onclick="showStrategy()">📊 Strategy</button>
+    <button class="primary" onclick="login()">🔐 Login</button>
+  </div>
+</header>
+
+<!-- 👤 Profile -->
+<div id="userProfile" class="user-profile hidden">
+  <div class="user-left">
+    <img id="userPic" class="avatar">
+    <div>
+      <div id="userName" class="user-name"></div>
+      <div id="userEmail" class="email"></div>
+    </div>
+  </div>
+  <button class="ghost" onclick="logout()">Logout</button>
 </div>
 
-<div class="dashboard">
-  <div class="card">Paid: ₹<span id="totalPaid">0</span></div>
-  <div class="card">Remaining: ₹<span id="totalRemaining">0</span></div>
-  <div class="card">EMIs Left: <span id="monthsLeft">0</span></div>
-  <div class="card">Debt-Free: <span id="debtFreeDate">-</span></div>
-</div>
+<!-- 📊 Dashboard -->
+<section class="dashboard">
+  <div class="card stat">
+    <div class="label">Paid</div>
+    <div class="value">₹<span id="totalPaid">0</span></div>
+  </div>
+  <div class="card stat">
+    <div class="label">Remaining</div>
+    <div class="value">₹<span id="totalRemaining">0</span></div>
+  </div>
+  <div class="card stat">
+    <div class="label">EMIs Left</div>
+    <div class="value"><span id="monthsLeft">0</span></div>
+  </div>
+  <div class="card stat">
+    <div class="label">Debt-Free</div>
+    <div class="value small" id="debtFreeDate">-</div>
+  </div>
+</section>
 
-<div class="form glass">
-  <input id="name" placeholder="Loan Name">
-  <input id="amount" type="number" placeholder="Total Amount">
-  <input id="emi" type="number" placeholder="EMI">
-  <input id="interest" type="number" placeholder="Interest %">
-  <input id="start" type="date">
-  <input id="tenure" type="number" placeholder="Tenure">
-  <button onclick="addLoan()">Add Loan</button>
-</div>
+<!-- ➕ Add Loan -->
+<section class="glass form">
+  <h3>Add Loan</h3>
+  <div class="grid">
+    <input id="name" placeholder="Loan Name">
+    <input id="amount" type="number" placeholder="Total Amount">
+    <input id="emi" type="number" placeholder="EMI">
+    <input id="interest" type="number" placeholder="Interest %">
+    <input id="start" type="date">
+    <input id="tenure" type="number" placeholder="Tenure (months)">
+  </div>
+  <button class="primary full" onclick="addLoan()">Add Loan</button>
+</section>
 
-<div class="prepay glass">
+<!-- 💸 Prepayment -->
+<section class="glass prepay">
   <h3>💸 Prepayment Simulator</h3>
-  <input id="extra" type="number" placeholder="Extra per month">
-  <button onclick="simulate()">Simulate</button>
-  <p id="result"></p>
-</div>
+  <div class="row">
+    <input id="extra" type="number" placeholder="Extra per month">
+    <button class="primary" onclick="simulate()">Simulate</button>
+  </div>
+  <p id="result" class="muted"></p>
+</section>
 
-<h3>📊 Overall</h3>
-<canvas id="chart"></canvas>
+<!-- 📊 Charts -->
+<section class="charts">
+  <div class="glass chart-card">
+    <h4>Overall</h4>
+    <canvas id="chart"></canvas>
+  </div>
 
-<h3>📈 Amortization</h3>
-<canvas id="amortChart"></canvas>
+  <div class="glass chart-card">
+    <h4>Amortization</h4>
+    <canvas id="amortChart"></canvas>
+  </div>
+</section>
 
-<div id="loans"></div>
+<!-- 📄 Loans -->
+<section id="loans" class="loans"></section>
 
 <script src="app.js"></script>
 </body>
