@@ -4,69 +4,91 @@ function save() {
   localStorage.setItem("loans", JSON.stringify(loans));
 }
 
+function generateDates(start, tenure) {
+  let dates = [];
+  let d = new Date(start);
+
+  for (let i = 0; i < tenure; i++) {
+    let newDate = new Date(d);
+    newDate.setMonth(d.getMonth() + i);
+    dates.push(newDate.toISOString().split("T")[0]);
+  }
+
+  return dates;
+}
+
 function addLoan() {
   const loan = {
-    name: document.getElementById("name").value,
-    amount: +document.getElementById("amount").value,
-    emi: +document.getElementById("emi").value,
-    start: document.getElementById("start").value,
-    tenure: +document.getElementById("tenure").value,
+    name: name.value,
+    amount: +amount.value,
+    emi: +emi.value,
+    start: start.value,
+    tenure: +tenure.value,
     payments: []
   };
 
-  for (let i = 0; i < loan.tenure; i++) {
-    loan.payments.push({ paid: false });
-  }
+  let dates = generateDates(loan.start, loan.tenure);
+
+  dates.forEach(date => {
+    loan.payments.push({ paid: false, date });
+  });
 
   loans.push(loan);
   save();
   render();
 }
 
-function togglePayment(loanIndex, emiIndex) {
-  loans[loanIndex].payments[emiIndex].paid =
-    !loans[loanIndex].payments[emiIndex].paid;
+function togglePayment(i, j) {
+  loans[i].payments[j].paid = !loans[i].payments[j].paid;
   save();
   render();
 }
 
 function render() {
-  const container = document.getElementById("loans");
+  let container = document.getElementById("loans");
   container.innerHTML = "";
 
   let totalPaid = 0;
   let totalRemaining = 0;
 
   loans.forEach((loan, i) => {
-    let paid = 0;
-
-    loan.payments.forEach(p => {
-      if (p.paid) paid += loan.emi;
-    });
+    let paid = loan.payments.filter(p => p.paid).length * loan.emi;
+    let percent = (paid / loan.amount) * 100;
 
     totalPaid += paid;
     totalRemaining += loan.amount - paid;
 
-    let html = `<div class="loan">
+    let html = `
+    <div class="loan">
       <h3>${loan.name}</h3>
-      <p>Paid: ₹${paid} / ₹${loan.amount}</p>`;
+      <p>₹${paid} / ₹${loan.amount}</p>
+      <p>${loan.payments.filter(p=>p.paid).length}/${loan.tenure} EMIs paid</p>
+
+      <div class="progress">
+        <div class="progress-bar" style="width:${percent}%"></div>
+      </div>
+    `;
 
     loan.payments.forEach((p, j) => {
+      let overdue = !p.paid && new Date(p.date) < new Date();
       html += `
+      <div class="emi ${overdue ? 'overdue' : ''}">
         <div>
           <input type="checkbox"
             ${p.paid ? "checked" : ""}
             onclick="togglePayment(${i}, ${j})">
-          EMI ${j + 1}
-        </div>`;
+          ${p.date}
+        </div>
+        <div>${overdue ? "❌ Overdue" : "₹"+loan.emi}</div>
+      </div>`;
     });
 
     html += `</div>`;
     container.innerHTML += html;
   });
 
-  document.getElementById("totalPaid").innerText = totalPaid;
-  document.getElementById("totalRemaining").innerText = totalRemaining;
+  totalPaidEl.innerText = totalPaid;
+  totalRemainingEl.innerText = totalRemaining;
 }
 
 render();
