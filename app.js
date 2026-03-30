@@ -96,7 +96,59 @@ function togglePayment(i, j) {
   render();
 }
 
-// 📊 RENDER CHART
+// 🔔 REMINDERS
+function checkReminders() {
+  let today = new Date();
+  let tomorrow = new Date();
+  tomorrow.setDate(today.getDate() + 1);
+
+  let messages = [];
+
+  loans.forEach(loan => {
+    loan.payments.forEach(p => {
+      let emiDate = new Date(p.date);
+
+      if (!p.paid) {
+        if (emiDate.toDateString() === tomorrow.toDateString()) {
+          messages.push(`⚠️ EMI due tomorrow (${loan.name})`);
+        }
+        if (emiDate < today) {
+          messages.push(`❌ Overdue EMI (${loan.name})`);
+        }
+      }
+    });
+  });
+
+  if (messages.length > 0) {
+    alert(messages.join("\n"));
+  }
+}
+
+// 📊 STRATEGY
+function showStrategy() {
+  let data = loans.map(l => {
+    let paid = l.payments.filter(p => p.paid).length * l.emi;
+    return {
+      name: l.name,
+      remaining: l.amount - paid
+    };
+  });
+
+  let snowball = [...data].sort((a, b) => a.remaining - b.remaining);
+  let avalanche = [...data].sort((a, b) => b.remaining - a.remaining);
+
+  let msg = "📊 Loan Strategy:\n\n";
+
+  msg += "🟢 Snowball:\n";
+  snowball.forEach(l => msg += `- ${l.name}\n`);
+
+  msg += "\n🔴 Avalanche:\n";
+  avalanche.forEach(l => msg += `- ${l.name}\n`);
+
+  alert(msg);
+}
+
+// 📊 CHART
 function renderChart(paid, remaining) {
   const ctx = document.getElementById("chart");
 
@@ -114,7 +166,7 @@ function renderChart(paid, remaining) {
   });
 }
 
-// 🔄 RENDER UI
+// 🔄 RENDER
 function render() {
   let container = document.getElementById("loans");
   container.innerHTML = "";
@@ -167,34 +219,5 @@ function render() {
   document.getElementById("monthsLeft").innerText = monthsLeft;
 
   renderChart(totalPaid, totalRemaining);
-}
-
-function checkReminders() {
-  let today = new Date();
-  let tomorrow = new Date();
-  tomorrow.setDate(today.getDate() + 1);
-
-  let messages = [];
-
-  loans.forEach(loan => {
-    loan.payments.forEach(p => {
-      let emiDate = new Date(p.date);
-
-      if (!p.paid) {
-        // EMI tomorrow
-        if (emiDate.toDateString() === tomorrow.toDateString()) {
-          messages.push(`⚠️ EMI due tomorrow (${loan.name})`);
-        }
-
-        // Overdue
-        if (emiDate < today) {
-          messages.push(`❌ Overdue EMI (${loan.name})`);
-        }
-      }
-    });
-  });
-
-  if (messages.length > 0) {
-    alert(messages.join("\n"));
-  }
+  checkReminders();
 }
