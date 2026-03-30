@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>EMI Tracker V4</title>
+  <title>EMI Tracker V5</title>
   <link rel="stylesheet" href="style.css">
 
   <!-- Firebase -->
@@ -14,24 +14,35 @@
 </head>
 <body>
 
-<h1>💰 EMI Tracker</h1>
+<h1>💰 EMI Tracker Pro</h1>
 
-<button onclick="login()">🔐 Login</button>
-<button onclick="showStrategy()">📊 Strategy</button>
-
-<div class="dashboard">
-  <div>Total Paid: ₹<span id="totalPaid">0</span></div>
-  <div>Total Remaining: ₹<span id="totalRemaining">0</span></div>
-  <div>EMIs Left: <span id="monthsLeft">0</span></div>
+<div class="top-bar">
+  <button onclick="login()">🔐 Login</button>
+  <button onclick="showStrategy()">📊 Strategy</button>
 </div>
 
-<div class="form">
+<div class="dashboard">
+  <div class="card">Paid: ₹<span id="totalPaid">0</span></div>
+  <div class="card">Remaining: ₹<span id="totalRemaining">0</span></div>
+  <div class="card">EMIs Left: <span id="monthsLeft">0</span></div>
+  <div class="card">Debt-Free: <span id="debtFreeDate">-</span></div>
+</div>
+
+<div class="form glass">
   <input id="name" placeholder="Loan Name">
   <input id="amount" type="number" placeholder="Total Amount">
   <input id="emi" type="number" placeholder="EMI">
+  <input id="interest" type="number" placeholder="Interest %">
   <input id="start" type="date">
   <input id="tenure" type="number" placeholder="Tenure">
   <button onclick="addLoan()">Add Loan</button>
+</div>
+
+<div class="prepay glass">
+  <h3>💸 Prepayment Simulator</h3>
+  <input id="extra" type="number" placeholder="Extra per month">
+  <button onclick="simulate()">Simulate</button>
+  <p id="result"></p>
 </div>
 
 <canvas id="chart"></canvas>
