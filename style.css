@@ -1,62 +1,175 @@
-body {
-  font-family: Arial;
-  background: linear-gradient(135deg,#0f172a,#1e293b);
-  color: white;
-  padding: 20px;
+:root{
+  --bg:#0b1220;
+  --card:rgba(255,255,255,0.08);
+  --card-strong:rgba(255,255,255,0.12);
+  --text:#e5e7eb;
+  --muted:#94a3b8;
+  --primary:#22c55e;
+  --danger:#ef4444;
 }
 
-h1 { text-align:center; }
+*{box-sizing:border-box}
 
-.top-bar { text-align:center; }
-
-button {
-  padding:10px;
-  margin:10px;
-  border:none;
-  border-radius:8px;
-  background:#22c55e;
-  color:white;
-  cursor:pointer;
-  transition:.3s;
+body{
+  margin:0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  background: radial-gradient(1200px 600px at 20% -10%, #1f2937 0%, transparent 50%),
+              linear-gradient(135deg,#0b1220,#111827);
+  color:var(--text);
+  padding:16px;
 }
-button:hover { transform:scale(1.05); }
 
-.dashboard {
+.header{
   display:flex;
-  flex-wrap:wrap;
-  justify-content:space-around;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;
+  top:0;
+  backdrop-filter: blur(10px);
+  padding:10px 0;
+  z-index:10;
 }
 
-.card {
-  background:rgba(255,255,255,0.1);
-  padding:15px;
-  margin:10px;
-  border-radius:12px;
+.header h1{ margin:0; font-size:22px }
+
+.header-actions button{ margin-left:8px }
+
+button{
+  border:none;
+  border-radius:10px;
+  padding:10px 14px;
+  cursor:pointer;
+  transition:.2s;
 }
 
-.glass {
-  background:rgba(255,255,255,0.08);
-  padding:15px;
-  border-radius:12px;
-  margin-top:20px;
+button.primary{
+  background:linear-gradient(135deg,#22c55e,#16a34a);
+  color:white;
 }
 
-.loan {
-  background:rgba(255,255,255,0.08);
-  padding:15px;
-  margin-top:15px;
-  border-radius:12px;
+button.ghost{
+  background:transparent;
+  color:var(--text);
+  border:1px solid rgba(255,255,255,0.15);
 }
 
-.emi {
+button.full{ width:100% }
+
+button:hover{ transform:translateY(-1px) scale(1.02) }
+
+.user-profile{
   display:flex;
   justify-content:space-between;
+  align-items:center;
+  background:var(--card);
+  border:1px solid rgba(255,255,255,0.1);
+  padding:12px;
+  border-radius:14px;
+  margin:10px 0;
 }
 
-.overdue { color:red; }
+.user-left{ display:flex; align-items:center }
 
-canvas {
-  background:white;
-  margin-top:20px;
+.avatar{
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  margin-right:10px;
+}
+
+.user-name{ font-weight:600 }
+.email{ font-size:12px; color:var(--muted) }
+.hidden{ display:none }
+
+.dashboard{
+  display:grid;
+  grid-template-columns: repeat(2,1fr);
+  gap:12px;
+}
+
+.card{
+  background:var(--card);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:16px;
+  padding:14px;
+  backdrop-filter: blur(12px);
+}
+
+.stat .label{ color:var(--muted); font-size:12px }
+.stat .value{ font-size:20px; font-weight:700 }
+.stat .value.small{ font-size:14px }
+
+.glass{
+  background:var(--card);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:16px;
+  padding:14px;
+  margin-top:14px;
+  backdrop-filter: blur(12px);
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+input{
+  width:100%;
+  padding:10px;
   border-radius:10px;
+  border:1px solid rgba(255,255,255,0.15);
+  background:rgba(255,255,255,0.06);
+  color:white;
+}
+
+.row{ display:flex; gap:10px }
+
+.charts{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:14px;
+  margin-top:14px;
+}
+
+.chart-card canvas{
+  background:white;
+  border-radius:10px;
+  padding:8px;
+}
+
+.loans{ margin-top:10px }
+
+.loan{
+  background:var(--card);
+  border:1px solid rgba(255,255,255,0.1);
+  padding:14px;
+  margin-top:12px;
+  border-radius:16px;
+  animation:fade .25s ease;
+}
+
+.loan h3{ margin:0 0 8px 0 }
+
+.emi{
+  display:flex;
+  justify-content:space-between;
+  font-size:13px;
+  padding:6px 0;
+}
+
+.overdue{ color:var(--danger) }
+
+@keyframes fade{
+  from{opacity:0; transform:translateY(6px)}
+  to{opacity:1; transform:translateY(0)}
+}
+
+.muted{ color:var(--muted) }
+
+/* tablet */
+@media(min-width:700px){
+  .dashboard{ grid-template-columns: repeat(4,1fr); }
+  .charts{ grid-template-columns:1fr 1fr; }
+  .grid{ grid-template-columns:repeat(3,1fr); }
 }
