@@ -1,18 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>EMI Tracker V3</title>
+  <title>EMI Tracker</title>
   <link rel="stylesheet" href="style.css">
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+  <!-- Chart -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
 <h1>💰 EMI Tracker</h1>
 
+<button onclick="login()">🔐 Login with Google</button>
+
 <div class="dashboard">
   <div>Total Paid: ₹<span id="totalPaid">0</span></div>
   <div>Total Remaining: ₹<span id="totalRemaining">0</span></div>
-  <div>Debt-Free In: <span id="monthsLeft">0</span> months</div>
+  <div>EMIs Left: <span id="monthsLeft">0</span></div>
 </div>
 
 <div class="form">
@@ -24,8 +33,7 @@
   <button onclick="addLoan()">Add Loan</button>
 </div>
 
-<h2>📊 Overall Chart</h2>
-<canvas id="overallChart"></canvas>
+<canvas id="chart"></canvas>
 
 <div id="loans"></div>
 
