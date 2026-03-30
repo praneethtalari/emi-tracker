@@ -9,26 +9,29 @@ h1 {
   text-align: center;
 }
 
+button {
+  padding: 10px;
+  margin: 10px;
+  border: none;
+  border-radius: 6px;
+  background: #22c55e;
+  color: white;
+  cursor: pointer;
+}
+
 .dashboard {
   display: flex;
   justify-content: space-around;
   background: #1e293b;
   padding: 15px;
   border-radius: 10px;
-  margin-bottom: 20px;
 }
 
-.form input, button {
+.form input {
   margin: 5px;
-  padding: 10px;
+  padding: 8px;
   border-radius: 6px;
   border: none;
-}
-
-button {
-  background: #22c55e;
-  color: white;
-  cursor: pointer;
 }
 
 .loan {
@@ -42,27 +45,24 @@ button {
   background: #334155;
   height: 10px;
   border-radius: 10px;
-  margin: 10px 0;
 }
 
 .progress-bar {
   height: 10px;
   background: #22c55e;
-  border-radius: 10px;
 }
 
 .emi {
   display: flex;
   justify-content: space-between;
-  margin: 5px 0;
 }
 
 .overdue {
   color: red;
 }
+
 canvas {
   background: white;
+  margin-top: 20px;
   border-radius: 10px;
-  margin: 20px 0;
-  padding: 10px;
 }
