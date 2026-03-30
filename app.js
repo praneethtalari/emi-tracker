@@ -26,9 +26,9 @@ function login() {
 // PROFILE
 function showUserProfile(u) {
   document.getElementById("userProfile").classList.remove("hidden");
-  document.getElementById("userName").innerText = u.displayName;
-  document.getElementById("userEmail").innerText = u.email;
-  document.getElementById("userPic").src = u.photoURL;
+  userName.innerText = u.displayName;
+  userEmail.innerText = u.email;
+  userPic.src = u.photoURL;
 }
 
 // LOGOUT
@@ -46,20 +46,19 @@ auth.onAuthStateChanged(u => {
 });
 
 // LOAD
-function loadData() {
-  db.collection("loans").doc(user.uid).get().then(doc => {
-    if (doc.exists) loans = doc.data().loans || [];
-    render();
-  });
+async function loadData() {
+  const doc = await db.collection("loans").doc(user.uid).get();
+  loans = doc.exists ? doc.data().loans || [] : [];
+  render();
 }
 
 // SAVE
-function save() {
-  db.collection("loans").doc(user.uid).set({ loans });
+async function save() {
+  await db.collection("loans").doc(user.uid).set({ loans });
 }
 
-// ADD LOAN ✅ FIXED
-function addLoan() {
+// ADD LOAN
+async function addLoan() {
   const name = document.getElementById("name").value;
   const amount = +document.getElementById("amount").value;
   const emi = +document.getElementById("emi").value;
@@ -82,11 +81,20 @@ function addLoan() {
   }
 
   loans.push(loan);
-  save();
+  await save();
   render();
 }
 
-// TOGGLE
+// DELETE LOAN ✅
+async function deleteLoan(index) {
+  if (!confirm("Delete this loan?")) return;
+
+  loans.splice(index,1);
+  await save();
+  render();
+}
+
+// TOGGLE EMI
 function togglePayment(i,j){
   loans[i].payments[j].paid=!loans[i].payments[j].paid;
   save(); render();
@@ -150,14 +158,23 @@ function render(){
     remain+=l.amount-p;
     months+=l.payments.filter(p=>!p.paid).length;
 
-    let html=`<div class="box"><h3>${l.name}</h3>`;
+    let html=`
+    <div class="box">
+      <div style="display:flex;justify-content:space-between;">
+        <h3>${l.name}</h3>
+        <button class="delete" onclick="deleteLoan(${i})">🗑️</button>
+      </div>
+    `;
+
     l.payments.forEach((p,j)=>{
-      html+=`<div>
-      <input type="checkbox" ${p.paid?"checked":""}
-      onclick="togglePayment(${i},${j})">
-      ${p.date}
+      html+=`
+      <div>
+        <input type="checkbox" ${p.paid?"checked":""}
+        onclick="togglePayment(${i},${j})">
+        ${p.date}
       </div>`;
     });
+
     html+="</div>";
     container.innerHTML+=html;
   });
