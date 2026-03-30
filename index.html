@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>EMI Tracker V5</title>
+  <title>EMI Tracker V6</title>
   <link rel="stylesheet" href="style.css">
 
   <!-- Firebase -->
@@ -9,7 +9,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
-  <!-- Chart -->
+  <!-- Charts -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -19,6 +19,7 @@
 <div class="top-bar">
   <button onclick="login()">🔐 Login</button>
   <button onclick="showStrategy()">📊 Strategy</button>
+  <button onclick="getAIInsights()">🧠 AI Insights</button>
 </div>
 
 <div class="dashboard">
@@ -45,7 +46,13 @@
   <p id="result"></p>
 </div>
 
+<h3>📊 Overall Status</h3>
 <canvas id="chart"></canvas>
+
+<h3>📈 Amortization Chart</h3>
+<canvas id="amortChart"></canvas>
+
+<div id="aiBox" class="glass"></div>
 
 <div id="loans"></div>
 
