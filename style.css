@@ -1,86 +1,68 @@
 body {
   margin:0;
-  font-family: Arial;
+  font-family:Arial;
   background:#0f172a;
   color:white;
 }
 
-.header {
+header {
   display:flex;
   justify-content:space-between;
   padding:10px;
 }
 
-.user-profile {
+.profile {
   display:flex;
   align-items:center;
   gap:10px;
   padding:10px;
 }
 
-.avatar {
+.profile img {
   width:40px;
-  height:40px;
   border-radius:50%;
 }
 
 .hidden { display:none; }
 
-/* 📱 SCREENS */
-.screens {
-  padding-bottom:70px;
-}
+.screen { display:none; padding:15px; }
+.screen.active { display:block; }
 
-.screen {
-  display:none;
-  padding:15px;
-}
-
-.screen.active {
-  display:block;
-  animation:fade 0.3s ease;
-}
-
-@keyframes fade {
-  from {opacity:0;}
-  to {opacity:1;}
-}
-
-/* 📊 CARDS */
-.dashboard {
+.cards {
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:10px;
 }
 
-.card {
+.cards div {
   background:#1e293b;
-  padding:15px;
+  padding:10px;
   border-radius:10px;
 }
 
-/* GLASS */
-.glass {
+.box {
   background:#1e293b;
   padding:15px;
   margin-top:10px;
   border-radius:10px;
 }
 
-/* 📱 BOTTOM NAV */
-.bottom-nav {
+input {
+  width:100%;
+  margin:5px 0;
+  padding:8px;
+}
+
+.nav {
   position:fixed;
   bottom:0;
   width:100%;
   display:flex;
   justify-content:space-around;
   background:#020617;
-  padding:10px 0;
+  padding:10px;
 }
 
-.bottom-nav button {
-  background:none;
-  border:none;
-  color:white;
-  font-size:20px;
+button {
+  padding:8px;
 }
