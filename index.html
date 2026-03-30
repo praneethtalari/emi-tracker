@@ -2,27 +2,24 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>EMI Tracker Pro</title>
+  <title>EMI Tracker</title>
   <link rel="stylesheet" href="style.css">
 
-  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
-  <!-- Charts -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
 
-<header class="header">
+<header>
   <h1>💰 EMI Tracker</h1>
   <button onclick="login()">Login</button>
 </header>
 
-<!-- 👤 PROFILE -->
-<div id="userProfile" class="user-profile hidden">
-  <img id="userPic" class="avatar">
+<div id="userProfile" class="hidden profile">
+  <img id="userPic">
   <div>
     <div id="userName"></div>
     <div id="userEmail"></div>
@@ -30,53 +27,44 @@
   <button onclick="logout()">Logout</button>
 </div>
 
-<!-- 📱 APP SCREENS -->
-<div class="screens">
+<div class="screen active" id="dashboard">
+  <div class="cards">
+    <div>Paid ₹<span id="totalPaid">0</span></div>
+    <div>Remaining ₹<span id="totalRemaining">0</span></div>
+    <div>EMIs <span id="monthsLeft">0</span></div>
+    <div>Debt-Free <span id="debtFreeDate">-</span></div>
+  </div>
 
-  <!-- 🏠 DASHBOARD -->
-  <section id="dashboard" class="screen active">
-    <div class="dashboard">
-      <div class="card">Paid ₹<span id="totalPaid">0</span></div>
-      <div class="card">Remaining ₹<span id="totalRemaining">0</span></div>
-      <div class="card">EMIs <span id="monthsLeft">0</span></div>
-      <div class="card">Debt-Free <span id="debtFreeDate">-</span></div>
-    </div>
+  <div class="box">
+    <h3>Add Loan</h3>
+    <input id="name" placeholder="Loan Name">
+    <input id="amount" type="number" placeholder="Amount">
+    <input id="emi" type="number" placeholder="EMI">
+    <input id="interest" type="number" placeholder="Interest">
+    <input id="start" type="date">
+    <input id="tenure" type="number" placeholder="Months">
+    <button onclick="addLoan()">Add Loan</button>
+  </div>
 
-    <div class="glass">
-      <h3>Add Loan</h3>
-      <input id="name" placeholder="Loan Name">
-      <input id="amount" type="number" placeholder="Amount">
-      <input id="emi" type="number" placeholder="EMI">
-      <input id="interest" type="number" placeholder="Interest %">
-      <input id="start" type="date">
-      <input id="tenure" type="number" placeholder="Months">
-      <button onclick="addLoan()">Add</button>
-    </div>
-
-    <div class="glass">
-      <h3>💸 Prepayment</h3>
-      <input id="extra" type="number" placeholder="Extra/month">
-      <button onclick="simulate()">Simulate</button>
-      <p id="result"></p>
-    </div>
-  </section>
-
-  <!-- 📄 LOANS -->
-  <section id="loansScreen" class="screen">
-    <h3>Your Loans</h3>
-    <div id="loans"></div>
-  </section>
-
-  <!-- 📊 CHARTS -->
-  <section id="chartsScreen" class="screen">
-    <canvas id="chart"></canvas>
-    <canvas id="amortChart"></canvas>
-  </section>
-
+  <div class="box">
+    <h3>Prepayment</h3>
+    <input id="extra" type="number" placeholder="Extra/month">
+    <button onclick="simulate()">Simulate</button>
+    <p id="result"></p>
+  </div>
 </div>
 
-<!-- 📱 BOTTOM NAV -->
-<div class="bottom-nav">
+<div class="screen" id="loansScreen">
+  <h3>Your Loans</h3>
+  <div id="loans"></div>
+</div>
+
+<div class="screen" id="chartsScreen">
+  <canvas id="chart"></canvas>
+  <canvas id="amortChart"></canvas>
+</div>
+
+<div class="nav">
   <button onclick="switchTab('dashboard')">🏠</button>
   <button onclick="switchTab('loansScreen')">📄</button>
   <button onclick="switchTab('chartsScreen')">📊</button>
