@@ -1,6 +1,6 @@
-// 🔥 FIREBASE CONFIG (YOURS)
+// 🔥 FIREBASE CONFIG
 const firebaseConfig = {
-  apiKey: "AIzaSyD...",
+  apiKey: "AIzaSyD8qs6TDKkN3-vdV7Xa3nA0YzydHklB3gQ",
   authDomain: "emi-tracker-9081d.firebaseapp.com",
   projectId: "emi-tracker-9081d"
 };
@@ -29,10 +29,10 @@ function login() {
   });
 }
 
-// ☁️ LOAD
+// ☁️ LOAD DATA
 function loadData() {
   db.collection("loans").doc(user.uid).get().then(doc => {
-    if (doc.exists) loans = doc.data().loans;
+    if (doc.exists) loans = doc.data().loans || [];
     render();
   });
 }
@@ -55,10 +55,14 @@ function addLoan() {
   };
 
   let d = new Date(loan.start);
-  for (let i=0;i<loan.tenure;i++){
-    let nd=new Date(d);
-    nd.setMonth(d.getMonth()+i);
-    loan.payments.push({paid:false,date:nd.toISOString().split("T")[0]});
+
+  for (let i = 0; i < loan.tenure; i++) {
+    let nd = new Date(d);
+    nd.setMonth(d.getMonth() + i);
+    loan.payments.push({
+      paid: false,
+      date: nd.toISOString().split("T")[0]
+    });
   }
 
   loans.push(loan);
@@ -66,124 +70,163 @@ function addLoan() {
   render();
 }
 
-// ✅ TOGGLE
-function togglePayment(i,j){
-  loans[i].payments[j].paid=!loans[i].payments[j].paid;
-  save(); render();
+// ✅ TOGGLE EMI
+function togglePayment(i, j) {
+  loans[i].payments[j].paid = !loans[i].payments[j].paid;
+  save();
+  render();
 }
 
-// 📅 DEBT FREE
-function debtFree(){
-  let max=null;
-  loans.forEach(l=>{
-    l.payments.forEach(p=>{
-      if(!p.paid){
-        let d=new Date(p.date);
-        if(!max||d>max) max=d;
+// 📅 DEBT FREE DATE
+function debtFree() {
+  let max = null;
+  loans.forEach(l => {
+    l.payments.forEach(p => {
+      if (!p.paid) {
+        let d = new Date(p.date);
+        if (!max || d > max) max = d;
       }
     });
   });
-  return max?max.toDateString():"-";
+  return max ? max.toDateString() : "-";
 }
 
-// 💸 SIMULATOR
-function simulate(){
-  let extra=+extraInput.value||0;
-  let months=0;
+// 💸 PREPAYMENT
+function simulate() {
+  let extra = +document.getElementById("extra").value || 0;
+  let months = 0;
 
-  loans.forEach(l=>{
-    let rem=l.payments.filter(p=>!p.paid).length*l.emi;
-    months+=Math.ceil(rem/(l.emi+extra));
+  loans.forEach(l => {
+    let remaining = l.payments.filter(p => !p.paid).length * l.emi;
+    months += Math.ceil(remaining / (l.emi + extra));
   });
 
-  result.innerText=`New payoff: ${months} months`;
+  document.getElementById("result").innerText =
+    `New payoff time: ${months} months`;
 }
 
 // 📊 AMORTIZATION
-function amortization(){
-  let principal=0, interest=0;
+function drawAmort() {
+  let principal = 0, interest = 0;
 
-  loans.forEach(l=>{
-    let paid=l.payments.filter(p=>p.paid).length*l.emi;
-    principal+=paid;
-    interest+=paid*(l.interest/100);
+  loans.forEach(l => {
+    let paid = l.payments.filter(p => p.paid).length * l.emi;
+    principal += paid;
+    interest += paid * (l.interest / 100);
   });
 
-  if(amortChart) amortChart.destroy();
+  if (amortChart) amortChart.destroy();
 
-  amortChart=new Chart(amortChartCanvas,{
-    type:"bar",
-    data:{
-      labels:["Principal","Interest"],
-      datasets:[{
-        data:[principal,interest],
-        backgroundColor:["#22c55e","#ef4444"]
+  amortChart = new Chart(document.getElementById("amortChart"), {
+    type: "bar",
+    data: {
+      labels: ["Principal", "Interest"],
+      datasets: [{
+        data: [principal, interest],
+        backgroundColor: ["#22c55e", "#ef4444"]
       }]
     }
   });
 }
 
 // 📊 MAIN CHART
-function drawChart(paid,remain){
-  if(chart) chart.destroy();
-  chart=new Chart(chartCanvas,{
-    type:"doughnut",
-    data:{
-      labels:["Paid","Remaining"],
-      datasets:[{data:[paid,remain]}]
+function drawChart(paid, remaining) {
+  if (chart) chart.destroy();
+
+  chart = new Chart(document.getElementById("chart"), {
+    type: "doughnut",
+    data: {
+      labels: ["Paid", "Remaining"],
+      datasets: [{
+        data: [paid, remaining],
+        backgroundColor: ["#22c55e", "#ef4444"]
+      }]
     }
   });
 }
 
-// 🧠 AI INSIGHTS (Gemini via REST)
-async function getAIInsights(){
-  let summary=JSON.stringify(loans);
+// 🔔 REMINDERS
+function checkReminders() {
+  let today = new Date();
+  let tomorrow = new Date();
+  tomorrow.setDate(today.getDate() + 1);
 
-  let res=await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=YOUR_API_KEY",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-      contents:[{
-        parts:[{text:`Analyze loans and suggest payoff strategy: ${summary}`}]
-      }]
-    })
+  let msgs = [];
+
+  loans.forEach(l => {
+    l.payments.forEach(p => {
+      let d = new Date(p.date);
+
+      if (!p.paid) {
+        if (d.toDateString() === tomorrow.toDateString())
+          msgs.push(`⚠️ EMI tomorrow (${l.name})`);
+
+        if (d < today)
+          msgs.push(`❌ Overdue EMI (${l.name})`);
+      }
+    });
   });
 
-  let data=await res.json();
+  if (msgs.length) alert(msgs.join("\n"));
+}
 
-  aiBox.innerText=data.candidates?.[0]?.content?.parts?.[0]?.text || "No response";
+// 📊 STRATEGY
+function showStrategy() {
+  let data = loans.map(l => {
+    let paid = l.payments.filter(p => p.paid).length * l.emi;
+    return { name: l.name, remaining: l.amount - paid };
+  });
+
+  let snowball = [...data].sort((a,b)=>a.remaining-b.remaining);
+  let avalanche = [...data].sort((a,b)=>b.remaining-a.remaining);
+
+  let msg = "📊 Strategy\n\n🟢 Snowball:\n";
+  snowball.forEach(l => msg += `- ${l.name}\n`);
+
+  msg += "\n🔴 Avalanche:\n";
+  avalanche.forEach(l => msg += `- ${l.name}\n`);
+
+  alert(msg);
 }
 
 // 🔄 RENDER
-function render(){
-  let totalPaid=0,totalRemain=0,months=0;
+function render() {
+  let totalPaid = 0, totalRemain = 0, months = 0;
+
+  let container = document.getElementById("loans");
+  container.innerHTML = "";
 
   loans.forEach((l,i)=>{
-    let paid=l.payments.filter(p=>p.paid).length*l.emi;
-    totalPaid+=paid;
-    totalRemain+=l.amount-paid;
-    months+=l.payments.filter(p=>!p.paid).length;
-  });
+    let paidCount = l.payments.filter(p=>p.paid).length;
+    let paid = paidCount * l.emi;
 
-  totalPaidEl.innerText=totalPaid;
-  totalRemainingEl.innerText=totalRemain;
-  monthsLeft.innerText=months;
-  debtFreeDate.innerText=debtFree();
+    totalPaid += paid;
+    totalRemain += l.amount - paid;
+    months += l.payments.filter(p=>!p.paid).length;
 
-  drawChart(totalPaid,totalRemain);
-  amortization();
+    let html = `<div class="loan">
+      <h3>${l.name} (${l.interest}%)</h3>
+      <p>₹${paid} / ₹${l.amount}</p>
+    `;
 
-  loansDiv.innerHTML="";
-  loans.forEach((l,i)=>{
-    let html=`<div class="loan"><h3>${l.name}</h3>`;
     l.payments.forEach((p,j)=>{
-      html+=`<div class="emi">
+      html += `<div class="emi">
         <input type="checkbox" ${p.paid?"checked":""}
         onclick="togglePayment(${i},${j})">
         ${p.date}
       </div>`;
     });
-    html+=`</div>`;
-    loansDiv.innerHTML+=html;
+
+    html += "</div>";
+    container.innerHTML += html;
   });
+
+  document.getElementById("totalPaid").innerText = totalPaid;
+  document.getElementById("totalRemaining").innerText = totalRemain;
+  document.getElementById("monthsLeft").innerText = months;
+  document.getElementById("debtFreeDate").innerText = debtFree();
+
+  drawChart(totalPaid,totalRemain);
+  drawAmort();
+  checkReminders();
 }
