@@ -168,3 +168,33 @@ function render() {
 
   renderChart(totalPaid, totalRemaining);
 }
+
+function checkReminders() {
+  let today = new Date();
+  let tomorrow = new Date();
+  tomorrow.setDate(today.getDate() + 1);
+
+  let messages = [];
+
+  loans.forEach(loan => {
+    loan.payments.forEach(p => {
+      let emiDate = new Date(p.date);
+
+      if (!p.paid) {
+        // EMI tomorrow
+        if (emiDate.toDateString() === tomorrow.toDateString()) {
+          messages.push(`⚠️ EMI due tomorrow (${loan.name})`);
+        }
+
+        // Overdue
+        if (emiDate < today) {
+          messages.push(`❌ Overdue EMI (${loan.name})`);
+        }
+      }
+    });
+  });
+
+  if (messages.length > 0) {
+    alert(messages.join("\n"));
+  }
+}
