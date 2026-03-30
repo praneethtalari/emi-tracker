@@ -1,24 +1,62 @@
 body {
   font-family: Arial;
+  background: #0f172a;
+  color: white;
   padding: 20px;
-  background: #f5f5f5;
+}
+
+h1 {
+  text-align: center;
 }
 
 .dashboard {
-  background: white;
+  display: flex;
+  justify-content: space-around;
+  background: #1e293b;
   padding: 15px;
-  margin-bottom: 20px;
   border-radius: 10px;
+  margin-bottom: 20px;
 }
 
-.form input {
+.form input, button {
   margin: 5px;
-  padding: 8px;
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+}
+
+button {
+  background: #22c55e;
+  color: white;
+  cursor: pointer;
 }
 
 .loan {
-  background: white;
+  background: #1e293b;
   padding: 15px;
-  margin-top: 10px;
+  margin-top: 15px;
+  border-radius: 12px;
+}
+
+.progress {
+  background: #334155;
+  height: 10px;
   border-radius: 10px;
+  margin: 10px 0;
+}
+
+.progress-bar {
+  height: 10px;
+  background: #22c55e;
+  border-radius: 10px;
+}
+
+.emi {
+  display: flex;
+  justify-content: space-between;
+  margin: 5px 0;
+}
+
+.overdue {
+  color: red;
 }
