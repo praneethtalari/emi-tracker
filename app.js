@@ -1,4 +1,5 @@
 let loans = JSON.parse(localStorage.getItem("loans")) || [];
+let chart;
 
 function save() {
   localStorage.setItem("loans", JSON.stringify(loans));
@@ -44,6 +45,31 @@ function togglePayment(i, j) {
   render();
 }
 
+function calculateMonthsLeft() {
+  let remaining = 0;
+  loans.forEach(loan => {
+    remaining += loan.payments.filter(p => !p.paid).length;
+  });
+  return remaining;
+}
+
+function renderChart(totalPaid, totalRemaining) {
+  const ctx = document.getElementById("overallChart");
+
+  if (chart) chart.destroy();
+
+  chart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Paid', 'Remaining'],
+      datasets: [{
+        data: [totalPaid, totalRemaining],
+        backgroundColor: ['#22c55e', '#ef4444']
+      }]
+    }
+  });
+}
+
 function render() {
   let container = document.getElementById("loans");
   container.innerHTML = "";
@@ -71,6 +97,7 @@ function render() {
 
     loan.payments.forEach((p, j) => {
       let overdue = !p.paid && new Date(p.date) < new Date();
+
       html += `
       <div class="emi ${overdue ? 'overdue' : ''}">
         <div>
@@ -87,8 +114,13 @@ function render() {
     container.innerHTML += html;
   });
 
-  totalPaidEl.innerText = totalPaid;
-  totalRemainingEl.innerText = totalRemaining;
+  document.getElementById("totalPaid").innerText = totalPaid;
+  document.getElementById("totalRemaining").innerText = totalRemaining;
+
+  let monthsLeft = calculateMonthsLeft();
+  document.getElementById("monthsLeft").innerText = monthsLeft;
+
+  renderChart(totalPaid, totalRemaining);
 }
 
 render();
