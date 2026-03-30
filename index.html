@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>EMI Tracker V2</title>
+  <title>EMI Tracker V3</title>
   <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
@@ -11,6 +12,7 @@
 <div class="dashboard">
   <div>Total Paid: ₹<span id="totalPaid">0</span></div>
   <div>Total Remaining: ₹<span id="totalRemaining">0</span></div>
+  <div>Debt-Free In: <span id="monthsLeft">0</span> months</div>
 </div>
 
 <div class="form">
@@ -21,6 +23,9 @@
   <input id="tenure" type="number" placeholder="Tenure">
   <button onclick="addLoan()">Add Loan</button>
 </div>
+
+<h2>📊 Overall Chart</h2>
+<canvas id="overallChart"></canvas>
 
 <div id="loans"></div>
 
