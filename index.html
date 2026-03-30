@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>EMI Tracker V6</title>
+  <title>EMI Tracker Pro</title>
   <link rel="stylesheet" href="style.css">
 
   <!-- Firebase -->
@@ -14,12 +14,11 @@
 </head>
 <body>
 
-<h1>💰 EMI Tracker Pro</h1>
+<h1>💰 EMI Tracker</h1>
 
 <div class="top-bar">
   <button onclick="login()">🔐 Login</button>
   <button onclick="showStrategy()">📊 Strategy</button>
-  <button onclick="getAIInsights()">🧠 AI Insights</button>
 </div>
 
 <div class="dashboard">
@@ -46,13 +45,11 @@
   <p id="result"></p>
 </div>
 
-<h3>📊 Overall Status</h3>
+<h3>📊 Overall</h3>
 <canvas id="chart"></canvas>
 
-<h3>📈 Amortization Chart</h3>
+<h3>📈 Amortization</h3>
 <canvas id="amortChart"></canvas>
-
-<div id="aiBox" class="glass"></div>
 
 <div id="loans"></div>
 
