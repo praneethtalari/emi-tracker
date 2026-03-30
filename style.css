@@ -60,3 +60,9 @@ button {
 .overdue {
   color: red;
 }
+canvas {
+  background: white;
+  border-radius: 10px;
+  margin: 20px 0;
+  padding: 10px;
+}
