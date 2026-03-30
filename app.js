@@ -14,20 +14,42 @@ let loans = [];
 let user;
 let chart, amortChart;
 
-// 🔐 LOGIN
+// 🔐 LOGIN (MULTI USER)
 function login() {
   const provider = new firebase.auth.GoogleAuthProvider();
 
   auth.signInWithPopup(provider).then(res => {
-    if (res.user.email !== "praneethtalari1@gmail.com") {
-      alert("Access denied");
-      auth.signOut();
-      return;
-    }
     user = res.user;
+
+    showUserProfile(user);
     loadData();
   });
 }
+
+// 👤 SHOW USER PROFILE
+function showUserProfile(u) {
+  document.getElementById("userProfile").classList.remove("hidden");
+
+  document.getElementById("userName").innerText = u.displayName;
+  document.getElementById("userEmail").innerText = u.email;
+  document.getElementById("userPic").src = u.photoURL;
+}
+
+// 🚪 LOGOUT
+function logout() {
+  auth.signOut().then(() => {
+    location.reload();
+  });
+}
+
+// 🔄 AUTO LOGIN
+auth.onAuthStateChanged(u => {
+  if (u) {
+    user = u;
+    showUserProfile(u);
+    loadData();
+  }
+});
 
 // ☁️ LOAD DATA
 function loadData() {
@@ -59,6 +81,7 @@ function addLoan() {
   for (let i = 0; i < loan.tenure; i++) {
     let nd = new Date(d);
     nd.setMonth(d.getMonth() + i);
+
     loan.payments.push({
       paid: false,
       date: nd.toISOString().split("T")[0]
@@ -80,6 +103,7 @@ function togglePayment(i, j) {
 // 📅 DEBT FREE DATE
 function debtFree() {
   let max = null;
+
   loans.forEach(l => {
     l.payments.forEach(p => {
       if (!p.paid) {
@@ -88,10 +112,11 @@ function debtFree() {
       }
     });
   });
+
   return max ? max.toDateString() : "-";
 }
 
-// 💸 PREPAYMENT
+// 💸 PREPAYMENT SIMULATOR
 function simulate() {
   let extra = +document.getElementById("extra").value || 0;
   let months = 0;
@@ -204,13 +229,15 @@ function render() {
     totalRemain += l.amount - paid;
     months += l.payments.filter(p=>!p.paid).length;
 
-    let html = `<div class="loan">
+    let html = `
+    <div class="loan">
       <h3>${l.name} (${l.interest}%)</h3>
       <p>₹${paid} / ₹${l.amount}</p>
     `;
 
     l.payments.forEach((p,j)=>{
-      html += `<div class="emi">
+      html += `
+      <div class="emi">
         <input type="checkbox" ${p.paid?"checked":""}
         onclick="togglePayment(${i},${j})">
         ${p.date}
