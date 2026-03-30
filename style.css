@@ -1,6 +1,6 @@
 body {
   font-family: Arial;
-  background: #0f172a;
+  background: linear-gradient(135deg, #0f172a, #1e293b);
   color: white;
   padding: 20px;
 }
@@ -9,36 +9,53 @@ h1 {
   text-align: center;
 }
 
+.top-bar {
+  text-align: center;
+}
+
 button {
   padding: 10px;
   margin: 10px;
+  border-radius: 8px;
   border: none;
-  border-radius: 6px;
   background: #22c55e;
   color: white;
   cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  transform: scale(1.05);
 }
 
 .dashboard {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-around;
-  background: #1e293b;
-  padding: 15px;
-  border-radius: 10px;
 }
 
-.form input {
-  margin: 5px;
-  padding: 8px;
-  border-radius: 6px;
-  border: none;
+.card {
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+  padding: 15px;
+  margin: 10px;
+  border-radius: 12px;
+}
+
+.glass {
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(10px);
+  padding: 15px;
+  border-radius: 12px;
+  margin-top: 20px;
 }
 
 .loan {
-  background: #1e293b;
+  background: rgba(255,255,255,0.08);
   padding: 15px;
   margin-top: 15px;
   border-radius: 12px;
+  animation: fadeIn 0.4s ease;
 }
 
 .progress {
@@ -61,8 +78,7 @@ button {
   color: red;
 }
 
-canvas {
-  background: white;
-  margin-top: 20px;
-  border-radius: 10px;
+@keyframes fadeIn {
+  from {opacity:0; transform: translateY(10px);}
+  to {opacity:1; transform: translateY(0);}
 }
