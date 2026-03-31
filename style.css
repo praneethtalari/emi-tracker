@@ -14,12 +14,14 @@ body {
   color:var(--text);
 }
 
+/* HEADER */
 header {
   display:flex;
   justify-content:space-between;
   padding:15px;
 }
 
+/* PROFILE */
 .profile {
   display:flex;
   align-items:center;
@@ -31,36 +33,52 @@ header {
   border:1px solid var(--border);
 }
 
-.profile img {
-  width:45px;
-  border-radius:50%;
+/* SCREENS */
+.screen {
+  display:none;
+  padding:15px;
+  animation:fadeSlide 0.4s ease;
 }
-
-.hidden { display:none; }
-
-.screen { display:none; padding:15px; }
 .screen.active { display:block; }
 
+@keyframes fadeSlide {
+  from { opacity:0; transform:translateY(20px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+/* CARDS */
 .cards {
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:12px;
 }
 
-.cards div {
+.card {
   background:var(--card);
   padding:15px;
   border-radius:16px;
   border:1px solid var(--border);
+  transition:0.25s;
 }
 
+.card:hover {
+  transform:translateY(-5px) scale(1.02);
+}
+
+/* BOX */
 .box {
   background:var(--card);
   padding:15px;
   margin-top:12px;
   border-radius:16px;
+  transition:0.2s;
 }
 
+.box:hover {
+  transform:scale(1.01);
+}
+
+/* INPUT */
 input {
   width:100%;
   padding:10px;
@@ -71,6 +89,7 @@ input {
   color:white;
 }
 
+/* BUTTON */
 button {
   padding:10px;
   border:none;
@@ -78,12 +97,18 @@ button {
   background:linear-gradient(135deg,#22c55e,#16a34a);
   color:white;
   margin:4px;
+  transition:0.2s;
+}
+
+button:active {
+  transform:scale(0.95);
 }
 
 .delete {
   background:var(--danger);
 }
 
+/* NAV */
 .nav {
   position:fixed;
   bottom:0;
@@ -92,4 +117,18 @@ button {
   justify-content:space-around;
   background:rgba(0,0,0,0.7);
   padding:10px;
+  backdrop-filter:blur(10px);
+}
+
+.nav button {
+  background:none;
+}
+
+/* CANVAS */
+canvas {
+  margin-top:20px;
+  background:rgba(255,255,255,0.05);
+  border-radius:12px;
+  padding:10px;
+  animation:fadeSlide 0.5s ease;
 }
