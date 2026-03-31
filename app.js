@@ -36,7 +36,6 @@ function logout() {
   auth.signOut().then(() => location.reload());
 }
 
-// AUTO LOGIN
 auth.onAuthStateChanged(u => {
   if (u) {
     user = u;
@@ -57,7 +56,7 @@ async function save() {
   await db.collection("loans").doc(user.uid).set({ loans });
 }
 
-// ADD LOAN
+// ADD
 async function addLoan() {
   const name = document.getElementById("name").value;
   const amount = +document.getElementById("amount").value;
@@ -66,10 +65,7 @@ async function addLoan() {
   const start = document.getElementById("start").value;
   const tenure = +document.getElementById("tenure").value;
 
-  if (!name || !amount || !emi || !start || !tenure) {
-    alert("Fill all fields");
-    return;
-  }
+  if (!name || !amount || !emi || !start || !tenure) return alert("Fill all");
 
   let loan = { name, amount, emi, interest, start, tenure, payments: [] };
 
@@ -85,60 +81,53 @@ async function addLoan() {
   render();
 }
 
-// DELETE LOAN ✅
-async function deleteLoan(index) {
-  if (!confirm("Delete this loan?")) return;
+// EDIT
+function editLoan(i){
+  let l=loans[i];
+  l.name=prompt("Name",l.name);
+  l.amount=+prompt("Amount",l.amount);
+  l.emi=+prompt("EMI",l.emi);
+  l.interest=+prompt("Interest",l.interest)||0;
+  save(); render();
+}
 
-  loans.splice(index,1);
+// DELETE
+async function deleteLoan(i){
+  if(!confirm("Delete loan?")) return;
+  loans.splice(i,1);
   await save();
   render();
 }
 
-// TOGGLE EMI
-function togglePayment(i,j){
-  loans[i].payments[j].paid=!loans[i].payments[j].paid;
-  save(); render();
+// EXPORT CSV
+function exportToExcel(){
+  let rows=[["Name","Amount","EMI","Interest"]];
+  loans.forEach(l=>rows.push([l.name,l.amount,l.emi,l.interest]));
+  let csv=rows.map(r=>r.join(",")).join("\n");
+  let blob=new Blob([csv]);
+  let a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="loans.csv";
+  a.click();
 }
 
-// SIMULATE
-function simulate(){
-  let extra=+document.getElementById("extra").value||0;
-  let months=0;
+// PDF
+function generatePDF(){
+  const { jsPDF } = window.jspdf;
+  let doc=new jsPDF();
 
+  doc.text("Loan Report",10,10);
+
+  let y=20;
   loans.forEach(l=>{
-    let rem=l.payments.filter(p=>!p.paid).length*l.emi;
-    months+=Math.ceil(rem/(l.emi+extra));
+    doc.text(`${l.name} | ₹${l.amount} | EMI ${l.emi}`,10,y);
+    y+=10;
   });
 
-  document.getElementById("result").innerText=`${months} months`;
+  doc.save("loan-report.pdf");
 }
 
-// CHARTS
-function drawChart(paid,remain){
-  if(chart) chart.destroy();
-  chart=new Chart(document.getElementById("chart"),{
-    type:"doughnut",
-    data:{labels:["Paid","Remaining"],datasets:[{data:[paid,remain]}]}
-  });
-}
-
-function drawAmort(){
-  let p=0,i=0;
-  loans.forEach(l=>{
-    let paid=l.payments.filter(p=>p.paid).length*l.emi;
-    p+=paid;
-    i+=paid*(l.interest/100);
-  });
-
-  if(amortChart) amortChart.destroy();
-
-  amortChart=new Chart(document.getElementById("amortChart"),{
-    type:"bar",
-    data:{labels:["Principal","Interest"],datasets:[{data:[p,i]}]}
-  });
-}
-
-// TAB SWITCH
+// TAB
 function switchTab(id){
   document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
@@ -147,42 +136,27 @@ function switchTab(id){
 // RENDER
 function render(){
   let paid=0,remain=0,months=0;
+
   let container=document.getElementById("loans");
+  let dash=document.getElementById("loansDashboard");
+
   container.innerHTML="";
+  dash.innerHTML="";
 
   loans.forEach((l,i)=>{
-    let paidCount=l.payments.filter(p=>p.paid).length;
-    let p=paidCount*l.emi;
-
-    paid+=p;
-    remain+=l.amount-p;
-    months+=l.payments.filter(p=>!p.paid).length;
-
     let html=`
     <div class="box">
       <div style="display:flex;justify-content:space-between;">
         <h3>${l.name}</h3>
-        <button class="delete" onclick="deleteLoan(${i})">🗑️</button>
+        <div>
+          <button onclick="editLoan(${i})">✏️</button>
+          <button class="delete" onclick="deleteLoan(${i})">🗑️</button>
+        </div>
       </div>
-    `;
+      <p>₹${l.amount} | EMI ${l.emi}</p>
+    </div>`;
 
-    l.payments.forEach((p,j)=>{
-      html+=`
-      <div>
-        <input type="checkbox" ${p.paid?"checked":""}
-        onclick="togglePayment(${i},${j})">
-        ${p.date}
-      </div>`;
-    });
-
-    html+="</div>";
     container.innerHTML+=html;
+    dash.innerHTML+=html;
   });
-
-  totalPaid.innerText=paid;
-  totalRemaining.innerText=remain;
-  monthsLeft.innerText=months;
-
-  drawChart(paid,remain);
-  drawAmort();
 }
