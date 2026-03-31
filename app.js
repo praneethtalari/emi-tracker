@@ -14,63 +14,63 @@ let user;
 let chart, amortChart;
 
 // LOGIN
-function login() {
-  const provider = new firebase.auth.GoogleAuthProvider();
-  auth.signInWithPopup(provider).then(res => {
-    user = res.user;
+function login(){
+  const provider=new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider).then(res=>{
+    user=res.user;
     showUserProfile(user);
     loadData();
   });
 }
 
 // PROFILE
-function showUserProfile(u) {
+function showUserProfile(u){
   document.getElementById("userProfile").classList.remove("hidden");
-  userName.innerText = u.displayName;
-  userEmail.innerText = u.email;
-  userPic.src = u.photoURL;
+  userName.innerText=u.displayName;
+  userEmail.innerText=u.email;
+  userPic.src=u.photoURL;
 }
 
 // LOGOUT
-function logout() {
-  auth.signOut().then(() => location.reload());
+function logout(){
+  auth.signOut().then(()=>location.reload());
 }
 
-auth.onAuthStateChanged(u => {
-  if (u) {
-    user = u;
+auth.onAuthStateChanged(u=>{
+  if(u){
+    user=u;
     showUserProfile(u);
     loadData();
   }
 });
 
 // LOAD
-async function loadData() {
-  const doc = await db.collection("loans").doc(user.uid).get();
-  loans = doc.exists ? doc.data().loans || [] : [];
+async function loadData(){
+  const doc=await db.collection("loans").doc(user.uid).get();
+  loans=doc.exists?doc.data().loans||[]:[];
   render();
 }
 
 // SAVE
-async function save() {
-  await db.collection("loans").doc(user.uid).set({ loans });
+async function save(){
+  await db.collection("loans").doc(user.uid).set({loans});
 }
 
 // ADD
-async function addLoan() {
-  const name = document.getElementById("name").value;
-  const amount = +document.getElementById("amount").value;
-  const emi = +document.getElementById("emi").value;
-  const interest = +document.getElementById("interest").value || 0;
-  const start = document.getElementById("start").value;
-  const tenure = +document.getElementById("tenure").value;
+async function addLoan(){
+  const name=document.getElementById("name").value;
+  const amount=+document.getElementById("amount").value;
+  const emi=+document.getElementById("emi").value;
+  const interest=+document.getElementById("interest").value||0;
+  const start=document.getElementById("start").value;
+  const tenure=+document.getElementById("tenure").value;
 
-  if (!name || !amount || !emi || !start || !tenure) return alert("Fill all");
+  if(!name||!amount||!emi||!start||!tenure) return alert("Fill all");
 
-  let loan = { name, amount, emi, interest, start, tenure, payments: [] };
+  let loan={name,amount,emi,interest,start,tenure,payments:[]};
 
-  let d = new Date(start);
-  for (let i=0;i<tenure;i++){
+  let d=new Date(start);
+  for(let i=0;i<tenure;i++){
     let nd=new Date(d);
     nd.setMonth(d.getMonth()+i);
     loan.payments.push({paid:false,date:nd.toISOString().split("T")[0]});
@@ -93,7 +93,7 @@ function editLoan(i){
 
 // DELETE
 async function deleteLoan(i){
-  if(!confirm("Delete loan?")) return;
+  if(!confirm("Delete?")) return;
   loans.splice(i,1);
   await save();
   render();
@@ -104,6 +104,7 @@ function exportToExcel(){
   let rows=[["Name","Amount","EMI","Interest"]];
   loans.forEach(l=>rows.push([l.name,l.amount,l.emi,l.interest]));
   let csv=rows.map(r=>r.join(",")).join("\n");
+
   let blob=new Blob([csv]);
   let a=document.createElement("a");
   a.href=URL.createObjectURL(blob);
@@ -113,14 +114,14 @@ function exportToExcel(){
 
 // PDF
 function generatePDF(){
-  const { jsPDF } = window.jspdf;
+  const { jsPDF }=window.jspdf;
   let doc=new jsPDF();
 
   doc.text("Loan Report",10,10);
 
   let y=20;
   loans.forEach(l=>{
-    doc.text(`${l.name} | ₹${l.amount} | EMI ${l.emi}`,10,y);
+    doc.text(`${l.name} ₹${l.amount} EMI ${l.emi}`,10,y);
     y+=10;
   });
 
@@ -135,8 +136,6 @@ function switchTab(id){
 
 // RENDER
 function render(){
-  let paid=0,remain=0,months=0;
-
   let container=document.getElementById("loans");
   let dash=document.getElementById("loansDashboard");
 
@@ -159,4 +158,6 @@ function render(){
     container.innerHTML+=html;
     dash.innerHTML+=html;
   });
+
+  lucide.createIcons();
 }
