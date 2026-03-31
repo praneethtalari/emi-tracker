@@ -328,3 +328,19 @@ function render(){
   drawCharts();
   lucide.createIcons();
 }
+
+// NAV AUTO HIDE ON SCROLL
+let lastScroll = 0;
+
+window.addEventListener("scroll", () => {
+  const nav = document.querySelector(".nav");
+  const currentScroll = window.pageYOffset;
+
+  if (currentScroll > lastScroll) {
+    nav.classList.add("hide"); // scroll down
+  } else {
+    nav.classList.remove("hide"); // scroll up
+  }
+
+  lastScroll = currentScroll;
+});
