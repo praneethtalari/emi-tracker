@@ -11,6 +11,7 @@ const db = firebase.firestore();
 
 let loans = [];
 let user;
+let barChart, lineChart, pieChart;
 
 // LOGIN
 function login(){
@@ -72,9 +73,11 @@ function updateEMI(){
   }
 }
 
-document.getElementById("amount").addEventListener("input",updateEMI);
-document.getElementById("interest").addEventListener("input",updateEMI);
-document.getElementById("tenure").addEventListener("input",updateEMI);
+window.addEventListener("DOMContentLoaded",()=>{
+  document.getElementById("amount").addEventListener("input",updateEMI);
+  document.getElementById("interest").addEventListener("input",updateEMI);
+  document.getElementById("tenure").addEventListener("input",updateEMI);
+});
 
 // ADD LOAN
 async function addLoan(){
@@ -84,7 +87,10 @@ async function addLoan(){
   const tenure=+document.getElementById("tenure").value;
   const start=document.getElementById("start").value;
 
-  if(!name||!amount||!start||!tenure) return alert("Fill all");
+  if(!name||!amount||!start||!tenure){
+    alert("Fill all fields");
+    return;
+  }
 
   const emi=calculateEMI(amount,interest,tenure);
 
@@ -97,7 +103,7 @@ async function addLoan(){
   render();
 }
 
-// SCHEDULE
+// AMORTIZATION
 function generateSchedule(loan){
   let balance=loan.amount;
   let rate=loan.interest/100/12;
@@ -124,7 +130,10 @@ function generateSchedule(loan){
       balance:Math.max(0,Math.round(balance))
     });
 
-    loan.payments.push({paid:false,date:nd.toISOString().split("T")[0]});
+    loan.payments.push({
+      paid:false,
+      date:nd.toISOString().split("T")[0]
+    });
   }
 }
 
@@ -140,7 +149,12 @@ function calculateLoanStats(loan){
     }
   });
 
-  return {paidPrincipal,paidInterest,totalPaid:paidPrincipal+paidInterest,remaining};
+  return {
+    paidPrincipal,
+    paidInterest,
+    totalPaid:paidPrincipal+paidInterest,
+    remaining
+  };
 }
 
 // DEBT FREE DATE
@@ -154,15 +168,16 @@ function getDebtFreeDate(){
   return last?last.toDateString():"-";
 }
 
-// TOGGLE
+// TOGGLE EMI
 function togglePayment(i,j){
   loans[i].payments[j].paid=!loans[i].payments[j].paid;
-  save();render();
+  save();
+  render();
 }
 
 // DELETE
 async function deleteLoan(i){
-  if(!confirm("Delete?")) return;
+  if(!confirm("Delete loan?")) return;
   loans.splice(i,1);
   await save();
   render();
@@ -179,16 +194,18 @@ function editLoan(i){
   l.emi=calculateEMI(l.amount,l.interest,l.tenure);
   generateSchedule(l);
 
-  save();render();
+  save();
+  render();
 }
 
-// EXPORT
+// EXPORT CSV
 function exportToExcel(){
   let rows=[["Loan","Remaining"]];
   loans.forEach(l=>{
     let s=calculateLoanStats(l);
     rows.push([l.name,s.remaining]);
   });
+
   let csv=rows.map(r=>r.join(",")).join("\n");
   let blob=new Blob([csv]);
   let a=document.createElement("a");
@@ -201,20 +218,72 @@ function exportToExcel(){
 function generatePDF(){
   const {jsPDF}=window.jspdf;
   let doc=new jsPDF();
+
   doc.text("Loan Report",10,10);
   let y=20;
+
   loans.forEach(l=>{
     let s=calculateLoanStats(l);
     doc.text(`${l.name} Remaining ₹${s.remaining}`,10,y);
     y+=10;
   });
+
   doc.save("report.pdf");
 }
 
-// TAB
+// TAB SWITCH
 function switchTab(id){
   document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
+}
+
+// CHARTS
+function drawCharts(){
+
+  let labels=loans.map(l=>l.name);
+  let data=loans.map(l=>calculateLoanStats(l).remaining);
+
+  if(barChart) barChart.destroy();
+
+  barChart=new Chart(document.getElementById("barChart"),{
+    type:"bar",
+    data:{labels,datasets:[{label:"Remaining Balance",data}]},
+    options:{animation:{duration:1200}}
+  });
+
+  if(loans.length>0){
+    let l=loans[0];
+    let balances=l.schedule.map(m=>m.balance);
+
+    if(lineChart) lineChart.destroy();
+
+    lineChart=new Chart(document.getElementById("lineChart"),{
+      type:"line",
+      data:{
+        labels:balances.map((_,i)=>i+1),
+        datasets:[{label:"Balance",data:balances,tension:0.4}]
+      },
+      options:{animation:{duration:1500}}
+    });
+  }
+
+  let p=0,i=0;
+  loans.forEach(l=>{
+    let s=calculateLoanStats(l);
+    p+=s.paidPrincipal;
+    i+=s.paidInterest;
+  });
+
+  if(pieChart) pieChart.destroy();
+
+  pieChart=new Chart(document.getElementById("pieChart"),{
+    type:"pie",
+    data:{
+      labels:["Principal","Interest"],
+      datasets:[{data:[p,i]}]
+    },
+    options:{animation:{duration:1200}}
+  });
 }
 
 // RENDER
@@ -251,16 +320,11 @@ function render(){
     dash.innerHTML+=html;
   });
 
-  totalPaidEl().innerText=totalPaid;
-  totalRemainingEl().innerText=totalRemaining;
-  monthsLeftEl().innerText=totalEMI;
-  debtFreeDateEl().innerText=getDebtFreeDate();
+  document.getElementById("totalPaid").innerText=totalPaid;
+  document.getElementById("totalRemaining").innerText=totalRemaining;
+  document.getElementById("monthsLeft").innerText=totalEMI;
+  document.getElementById("debtFreeDate").innerText=getDebtFreeDate();
 
+  drawCharts();
   lucide.createIcons();
 }
-
-// ELEMENT HELPERS
-const totalPaidEl=()=>document.getElementById("totalPaid");
-const totalRemainingEl=()=>document.getElementById("totalRemaining");
-const monthsLeftEl=()=>document.getElementById("monthsLeft");
-const debtFreeDateEl=()=>document.getElementById("debtFreeDate");
