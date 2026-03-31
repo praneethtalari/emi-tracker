@@ -67,6 +67,7 @@ button {
   padding:8px;
   border:none;
   border-radius:6px;
+  margin:3px;
 }
 
 .delete {
