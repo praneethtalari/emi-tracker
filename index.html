@@ -2,7 +2,6 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>EMI Tracker</title>
 
   <!-- FONT -->
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
@@ -14,6 +13,9 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+  <!-- CHART -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <!-- ICONS -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -38,13 +40,13 @@
   <button onclick="logout()">Logout</button>
 </div>
 
+<!-- DASHBOARD -->
 <div class="screen active" id="dashboard">
-
   <div class="cards">
-    <div>Paid ₹<span id="totalPaid">0</span></div>
-    <div>Remaining ₹<span id="totalRemaining">0</span></div>
-    <div>EMIs <span id="monthsLeft">0</span></div>
-    <div>Debt-Free <span id="debtFreeDate">-</span></div>
+    <div class="card">Paid ₹<span id="totalPaid">0</span></div>
+    <div class="card">Remaining ₹<span id="totalRemaining">0</span></div>
+    <div class="card">EMIs <span id="monthsLeft">0</span></div>
+    <div class="card">Debt-Free <span id="debtFreeDate">-</span></div>
   </div>
 
   <div class="box">
@@ -58,7 +60,7 @@
     <input id="amount" type="number" placeholder="Amount">
     <input id="interest" type="number" placeholder="Interest %">
     <input id="tenure" type="number" placeholder="Months">
-    <input id="emi" type="number" placeholder="EMI (auto)" readonly>
+    <input id="emi" placeholder="EMI (auto)" readonly>
     <input id="start" type="date">
     <button onclick="addLoan()">Add Loan</button>
   </div>
@@ -66,14 +68,25 @@
   <div id="loansDashboard"></div>
 </div>
 
+<!-- LOANS -->
 <div class="screen" id="loansScreen">
   <h3>Your Loans</h3>
   <div id="loans"></div>
 </div>
 
+<!-- CHARTS -->
+<div class="screen" id="chartsScreen">
+  <h3>Analytics</h3>
+  <canvas id="barChart"></canvas>
+  <canvas id="lineChart"></canvas>
+  <canvas id="pieChart"></canvas>
+</div>
+
+<!-- NAV -->
 <div class="nav">
   <button onclick="switchTab('dashboard')"><i data-lucide="home"></i></button>
   <button onclick="switchTab('loansScreen')"><i data-lucide="file-text"></i></button>
+  <button onclick="switchTab('chartsScreen')"><i data-lucide="bar-chart-3"></i></button>
 </div>
 
 <script src="app.js"></script>
