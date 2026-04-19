@@ -453,10 +453,16 @@ function render() {
     });
   }
 
+  const totalMonthlyEMI = loans.reduce((sum, l) => {
+    const hasUnpaid = l.payments.some(p => !p.paid);
+    return sum + (hasUnpaid ? l.emi : 0);
+  }, 0);
+
   document.getElementById("totalPaid").innerText = totalPaid.toLocaleString('en-IN');
   document.getElementById("totalRemaining").innerText = totalRemaining.toLocaleString('en-IN');
   document.getElementById("monthsLeft").innerText = totalEMIsLeft;
   document.getElementById("debtFreeDate").innerText = getDebtFreeDate();
+  document.getElementById("totalMonthlyEMI").innerText = totalMonthlyEMI.toLocaleString('en-IN');
 
   drawCharts();
   lucide.createIcons();
