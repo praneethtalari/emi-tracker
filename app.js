@@ -150,6 +150,33 @@ function getDebtFreeDate() {
   return last.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' });
 }
 
+/* ── NEXT PAYMENT DATE ── */
+function getNextPaymentDate(loan) {
+  for (let i = 0; i < loan.schedule.length; i++) {
+    if (!loan.payments[i]?.paid) {
+      return loan.schedule[i].date; // "YYYY-MM-DD"
+    }
+  }
+  return null; // fully paid
+}
+
+function formatNextPayment(dateStr) {
+  if (!dateStr) return { label: "Fully Paid ✓", status: "paid", daysLeft: null };
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const due = new Date(dateStr);
+  due.setHours(0, 0, 0, 0);
+  const diff = Math.round((due - today) / (1000 * 60 * 60 * 24));
+
+  const formatted = due.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+
+  if (diff < 0)   return { label: `${formatted} (${Math.abs(diff)}d overdue)`, status: "overdue",   daysLeft: diff };
+  if (diff === 0) return { label: `${formatted} (Due Today!)`,                  status: "today",    daysLeft: 0 };
+  if (diff <= 7)  return { label: `${formatted} (in ${diff}d)`,                 status: "soon",     daysLeft: diff };
+  return           { label: `${formatted} (in ${diff}d)`,                        status: "upcoming", daysLeft: diff };
+}
+
 /* ── ACTIONS ── */
 function togglePayment(i, j) {
   loans[i].payments[j].paid = !loans[i].payments[j].paid;
@@ -364,6 +391,17 @@ function buildLoanCard(l, i, compact = false) {
   let paidCount = l.payments.filter(p => p.paid).length;
   let pct = Math.round((paidCount / l.tenure) * 100);
 
+  const nextDateStr = getNextPaymentDate(l);
+  const next = formatNextPayment(nextDateStr);
+  const nextStatusColors = {
+    overdue:  { bg: 'rgba(255,77,109,0.12)',  border: 'rgba(255,77,109,0.25)',  color: '#ff4d6d' },
+    today:    { bg: 'rgba(255,214,10,0.12)',  border: 'rgba(255,214,10,0.25)',  color: '#ffd60a' },
+    soon:     { bg: 'rgba(255,170,0,0.10)',   border: 'rgba(255,170,0,0.22)',   color: '#ffaa00' },
+    upcoming: { bg: 'rgba(0,245,160,0.07)',   border: 'rgba(0,245,160,0.18)',   color: '#00f5a0' },
+    paid:     { bg: 'rgba(0,245,160,0.07)',   border: 'rgba(0,245,160,0.18)',   color: '#00f5a0' },
+  };
+  const nc = nextStatusColors[next.status];
+
   let scheduleRows = l.schedule.map((m, j) => `
     <div class="sch-row ${l.payments[j]?.paid ? 'paid' : ''}">
       <span>${m.date}</span>
@@ -404,6 +442,26 @@ function buildLoanCard(l, i, compact = false) {
         <div class="loan-stat-label">Progress</div>
         <div class="loan-stat-value">${paidCount}/${l.tenure} EMIs</div>
       </div>
+    </div>
+
+    <div class="next-payment-bar" style="
+      margin-top: 12px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: ${nc.bg};
+      border: 1px solid ${nc.border};
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    ">
+      <div style="display:flex; flex-direction:column; flex:1; min-width:0;">
+        <span style="font-size:10px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:${nc.color}; opacity:0.75; margin-bottom:3px;">Next Payment</span>
+        <span style="font-size:13px; font-weight:700; font-family:'DM Mono',monospace; color:${nc.color}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${next.label}</span>
+      </div>
+      ${next.status === 'overdue' ? `<span style="font-size:18px;">⚠️</span>` : ''}
+      ${next.status === 'today'   ? `<span style="font-size:18px;">🔔</span>` : ''}
+      ${next.status === 'soon'    ? `<span style="font-size:18px;">⏰</span>` : ''}
+      ${next.status === 'paid'    ? `<span style="font-size:18px;">✅</span>` : ''}
     </div>
 
     <div class="progress-wrap">
