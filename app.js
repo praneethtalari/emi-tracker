@@ -27,10 +27,16 @@ function showUserProfile(u) {
   document.getElementById("userEmail").innerText = u.email;
   document.getElementById("userPic").src = u.photoURL;
   document.getElementById("userProfile").classList.remove("hidden");
+  document.getElementById("loginBtn").style.display = "none"; // hide Connect when logged in
 }
 
 function logout() {
-  auth.signOut().then(() => location.reload());
+  auth.signOut().then(() => {
+    document.getElementById("loginBtn").style.display = "";
+    document.getElementById("userProfile").classList.add("hidden");
+    loans = [];
+    render();
+  });
 }
 
 auth.onAuthStateChanged(u => {
@@ -148,33 +154,6 @@ function getDebtFreeDate() {
   });
   if (!last) return "—";
   return last.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' });
-}
-
-/* ── NEXT PAYMENT DATE ── */
-function getNextPaymentDate(loan) {
-  for (let i = 0; i < loan.schedule.length; i++) {
-    if (!loan.payments[i]?.paid) {
-      return loan.schedule[i].date; // "YYYY-MM-DD"
-    }
-  }
-  return null; // fully paid
-}
-
-function formatNextPayment(dateStr) {
-  if (!dateStr) return { label: "Fully Paid ✓", status: "paid", daysLeft: null };
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const due = new Date(dateStr);
-  due.setHours(0, 0, 0, 0);
-  const diff = Math.round((due - today) / (1000 * 60 * 60 * 24));
-
-  const formatted = due.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
-
-  if (diff < 0)   return { label: `${formatted} (${Math.abs(diff)}d overdue)`, status: "overdue",   daysLeft: diff };
-  if (diff === 0) return { label: `${formatted} (Due Today!)`,                  status: "today",    daysLeft: 0 };
-  if (diff <= 7)  return { label: `${formatted} (in ${diff}d)`,                 status: "soon",     daysLeft: diff };
-  return           { label: `${formatted} (in ${diff}d)`,                        status: "upcoming", daysLeft: diff };
 }
 
 /* ── ACTIONS ── */
@@ -393,14 +372,13 @@ function buildLoanCard(l, i, compact = false) {
 
   const nextDateStr = getNextPaymentDate(l);
   const next = formatNextPayment(nextDateStr);
-  const nextStatusColors = {
-    overdue:  { bg: 'rgba(255,77,109,0.12)',  border: 'rgba(255,77,109,0.25)',  color: '#ff4d6d' },
-    today:    { bg: 'rgba(255,214,10,0.12)',  border: 'rgba(255,214,10,0.25)',  color: '#ffd60a' },
-    soon:     { bg: 'rgba(255,170,0,0.10)',   border: 'rgba(255,170,0,0.22)',   color: '#ffaa00' },
-    upcoming: { bg: 'rgba(0,245,160,0.07)',   border: 'rgba(0,245,160,0.18)',   color: '#00f5a0' },
-    paid:     { bg: 'rgba(0,245,160,0.07)',   border: 'rgba(0,245,160,0.18)',   color: '#00f5a0' },
-  };
-  const nc = nextStatusColors[next.status];
+  const nc = {
+    overdue:  { bg:'rgba(255,77,109,0.12)',  border:'rgba(255,77,109,0.28)',  color:'#ff4d6d', icon:'⚠️' },
+    today:    { bg:'rgba(255,214,10,0.12)',  border:'rgba(255,214,10,0.28)',  color:'#ffd60a', icon:'🔔' },
+    soon:     { bg:'rgba(255,170,0,0.10)',   border:'rgba(255,170,0,0.25)',   color:'#ffaa00', icon:'⏰' },
+    upcoming: { bg:'rgba(0,245,160,0.07)',   border:'rgba(0,245,160,0.2)',    color:'var(--accent)', icon:'📅' },
+    paid:     { bg:'rgba(0,245,160,0.07)',   border:'rgba(0,245,160,0.2)',    color:'var(--accent)', icon:'✅' },
+  }[next.status];
 
   let scheduleRows = l.schedule.map((m, j) => `
     <div class="sch-row ${l.payments[j]?.paid ? 'paid' : ''}">
@@ -444,24 +422,75 @@ function buildLoanCard(l, i, compact = false) {
       </div>
     </div>
 
-    <div class="next-payment-bar" style="
-      margin-top: 12px;
-      padding: 10px 14px;
-      border-radius: 12px;
-      background: ${nc.bg};
-      border: 1px solid ${nc.border};
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    ">
-      <div style="display:flex; flex-direction:column; flex:1; min-width:0;">
-        <span style="font-size:10px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:${nc.color}; opacity:0.75; margin-bottom:3px;">Next Payment</span>
-        <span style="font-size:13px; font-weight:700; font-family:'DM Mono',monospace; color:${nc.color}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${next.label}</span>
+    <div style="margin-top:12px;padding:10px 14px;border-radius:12px;background:${nc.bg};border:1px solid ${nc.border};display:flex;align-items:center;gap:10px;">
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:${nc.color};opacity:0.8;margin-bottom:3px;">Next Payment</div>
+        <div style="font-size:13px;font-weight:700;font-family:'DM Mono',monospace;color:${nc.color};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${next.label}</div>
       </div>
-      ${next.status === 'overdue' ? `<span style="font-size:18px;">⚠️</span>` : ''}
-      ${next.status === 'today'   ? `<span style="font-size:18px;">🔔</span>` : ''}
-      ${next.status === 'soon'    ? `<span style="font-size:18px;">⏰</span>` : ''}
-      ${next.status === 'paid'    ? `<span style="font-size:18px;">✅</span>` : ''}
+      <span style="font-size:18px;">${nc.icon}</span>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-label"><span>Payment progress</span><span>${pct}%</span></div>
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+    </div>
+
+    <button class="schedule-toggle" onclick="toggleSchedule('${i}-${compact ? 'd' : 'l'}')">
+      View amortization schedule ↓
+    </button>
+    <div class="schedule-wrap" id="sch-${i}-${compact ? 'd' : 'l'}">
+      <div class="sch-row header-row">
+        <span>Date</span><span>Principal</span><span>Interest</span><span>Balance</span><span></span>
+      </div>
+      ${scheduleRows}
+    </div>
+  </div>
+  `;
+}
+  let s = calculateLoanStats(l);
+  let paidCount = l.payments.filter(p => p.paid).length;
+  let pct = Math.round((paidCount / l.tenure) * 100);
+
+  let scheduleRows = l.schedule.map((m, j) => `
+    <div class="sch-row ${l.payments[j]?.paid ? 'paid' : ''}">
+      <span>${m.date}</span>
+      <span>₹${m.principal.toLocaleString('en-IN')}</span>
+      <span>₹${m.interest.toLocaleString('en-IN')}</span>
+      <span>₹${m.balance.toLocaleString('en-IN')}</span>
+      <button class="pay-btn" onclick="togglePayment(${i},${j})">${l.payments[j]?.paid ? '✓' : '·'}</button>
+    </div>
+  `).join('');
+
+  return `
+  <div class="loan-card">
+    <div class="loan-header">
+      <div>
+        <div class="loan-name">${l.name}</div>
+        <span class="badge badge-green" style="margin-top:4px;">₹${l.emi.toLocaleString('en-IN')}/mo</span>
+      </div>
+      <div class="loan-actions">
+        <button class="btn-icon" onclick="editLoan(${i})"><i data-lucide="pencil" style="width:14px;height:14px;"></i></button>
+        <button class="btn-icon del" onclick="deleteLoan(${i})"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
+      </div>
+    </div>
+
+    <div class="loan-stats">
+      <div class="loan-stat-item">
+        <div class="loan-stat-label">Paid</div>
+        <div class="loan-stat-value green">₹${s.totalPaid.toLocaleString('en-IN')}</div>
+      </div>
+      <div class="loan-stat-item">
+        <div class="loan-stat-label">Remaining</div>
+        <div class="loan-stat-value red">₹${s.remaining.toLocaleString('en-IN')}</div>
+      </div>
+      <div class="loan-stat-item">
+        <div class="loan-stat-label">Rate</div>
+        <div class="loan-stat-value">${l.interest}%</div>
+      </div>
+      <div class="loan-stat-item">
+        <div class="loan-stat-label">Progress</div>
+        <div class="loan-stat-value">${paidCount}/${l.tenure} EMIs</div>
+      </div>
     </div>
 
     <div class="progress-wrap">
@@ -524,6 +553,44 @@ function render() {
 
   drawCharts();
   lucide.createIcons();
+}
+
+/* ── THEME TOGGLE ── */
+function toggleTheme() {
+  const isLight = document.body.classList.toggle("light");
+  document.getElementById("themeIcon").textContent = isLight ? "🌙" : "☀️";
+  localStorage.setItem("emi-theme", isLight ? "light" : "dark");
+}
+
+// Restore saved theme on load
+(function() {
+  if (localStorage.getItem("emi-theme") === "light") {
+    document.body.classList.add("light");
+    document.addEventListener("DOMContentLoaded", () => {
+      const icon = document.getElementById("themeIcon");
+      if (icon) icon.textContent = "🌙";
+    });
+  }
+})();
+
+/* ── NEXT PAYMENT DATE ── */
+function getNextPaymentDate(loan) {
+  for (let i = 0; i < loan.schedule.length; i++) {
+    if (!loan.payments[i]?.paid) return loan.schedule[i].date;
+  }
+  return null;
+}
+
+function formatNextPayment(dateStr) {
+  if (!dateStr) return { label: "Fully Paid ✓", status: "paid" };
+  const today = new Date(); today.setHours(0,0,0,0);
+  const due = new Date(dateStr); due.setHours(0,0,0,0);
+  const diff = Math.round((due - today) / (1000*60*60*24));
+  const formatted = due.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
+  if (diff < 0)   return { label: `${formatted} (${Math.abs(diff)}d overdue)`, status: "overdue" };
+  if (diff === 0) return { label: `${formatted} (Due Today!)`,                  status: "today"   };
+  if (diff <= 7)  return { label: `${formatted} (in ${diff}d)`,                 status: "soon"    };
+  return           { label: `${formatted} (in ${diff}d)`,                        status: "upcoming"};
 }
 
 /* ── NAV HIDE ON SCROLL ── */
