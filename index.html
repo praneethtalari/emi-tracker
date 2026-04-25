@@ -17,7 +17,12 @@
 
 <header>
   <h2>◈ EMI Tracker</h2>
-  <button onclick="login()">Connect</button>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeToggleBtn" title="Toggle theme">
+      <span id="themeIcon">☀️</span>
+    </button>
+    <button id="loginBtn" onclick="login()">Connect</button>
+  </div>
 </header>
 
 <div id="userProfile" class="hidden profile">
