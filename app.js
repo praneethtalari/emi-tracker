@@ -6,34 +6,64 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
-const db = firebase.firestore();
+const db   = firebase.firestore();
 
 let loans = [];
 let user;
 let barChart, lineChart, pieChart;
 
-/* ── AUTH ── */
+/* ══════════════════════════════════════
+   THEME
+══════════════════════════════════════ */
+function toggleTheme() {
+  const isLight = document.body.classList.toggle('light');
+  document.getElementById('themeToggleBtn').textContent = isLight ? '🌙' : '☀️';
+  localStorage.setItem('emi-theme', isLight ? 'light' : 'dark');
+}
+
+// Apply saved theme as early as possible
+(function applyStoredTheme() {
+  if (localStorage.getItem('emi-theme') === 'light') {
+    document.body.classList.add('light');
+    // Icon will be set once DOM is ready
+    const setIcon = () => {
+      const btn = document.getElementById('themeToggleBtn');
+      if (btn) btn.textContent = '🌙';
+    };
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', setIcon);
+    } else {
+      setIcon();
+    }
+  }
+})();
+
+/* ══════════════════════════════════════
+   AUTH
+══════════════════════════════════════ */
 function login() {
   const provider = new firebase.auth.GoogleAuthProvider();
   auth.signInWithPopup(provider).then(res => {
     user = res.user;
     showUserProfile(user);
     loadData();
+  }).catch(err => {
+    showToast('Login failed: ' + err.message, 'error');
   });
 }
 
 function showUserProfile(u) {
-  document.getElementById("userName").innerText = u.displayName;
-  document.getElementById("userEmail").innerText = u.email;
-  document.getElementById("userPic").src = u.photoURL;
-  document.getElementById("userProfile").classList.remove("hidden");
-  document.getElementById("loginBtn").style.display = "none"; // hide Connect when logged in
+  document.getElementById('userName').innerText  = u.displayName;
+  document.getElementById('userEmail').innerText = u.email;
+  document.getElementById('userPic').src         = u.photoURL;
+  document.getElementById('userProfile').classList.remove('hidden');
+  document.getElementById('loginBtn').style.display = 'none';
 }
 
 function logout() {
   auth.signOut().then(() => {
-    document.getElementById("loginBtn").style.display = "";
-    document.getElementById("userProfile").classList.add("hidden");
+    document.getElementById('userProfile').classList.add('hidden');
+    document.getElementById('loginBtn').style.display = '';
     loans = [];
     render();
   });
@@ -43,103 +73,109 @@ auth.onAuthStateChanged(u => {
   if (u) { user = u; showUserProfile(u); loadData(); }
 });
 
-/* ── DATA ── */
+/* ══════════════════════════════════════
+   DATA
+══════════════════════════════════════ */
 async function loadData() {
-  const doc = await db.collection("loans").doc(user.uid).get();
+  const doc = await db.collection('loans').doc(user.uid).get();
   loans = doc.exists ? doc.data().loans || [] : [];
   render();
 }
 
 async function save() {
-  await db.collection("loans").doc(user.uid).set({ loans });
+  await db.collection('loans').doc(user.uid).set({ loans });
 }
 
-/* ── EMI CALC ── */
+/* ══════════════════════════════════════
+   EMI CALCULATION
+══════════════════════════════════════ */
 function calculateEMI(amount, interest, tenure) {
-  let r = interest / 100 / 12;
+  const r = interest / 100 / 12;
   if (r === 0) return Math.round(amount / tenure);
-  return Math.round(amount * r * Math.pow(1 + r, tenure) / (Math.pow(1 + r, tenure) - 1));
+  return Math.round(amount * r * Math.pow(1+r,tenure) / (Math.pow(1+r,tenure)-1));
 }
 
 function updateEMI() {
-  const amount = +document.getElementById("amount").value;
-  const interest = +document.getElementById("interest").value || 0;
-  const tenure = +document.getElementById("tenure").value;
+  const amount   = +document.getElementById('amount').value;
+  const interest = +document.getElementById('interest').value || 0;
+  const tenure   = +document.getElementById('tenure').value;
   if (amount && tenure) {
-    document.getElementById("emi").value = "₹" + calculateEMI(amount, interest, tenure).toLocaleString('en-IN');
+    document.getElementById('emi').value = '₹' + calculateEMI(amount,interest,tenure).toLocaleString('en-IN');
   }
 }
 
-window.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("amount").addEventListener("input", updateEMI);
-  document.getElementById("interest").addEventListener("input", updateEMI);
-  document.getElementById("tenure").addEventListener("input", updateEMI);
+window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('amount').addEventListener('input', updateEMI);
+  document.getElementById('interest').addEventListener('input', updateEMI);
+  document.getElementById('tenure').addEventListener('input', updateEMI);
 });
 
-/* ── ADD LOAN ── */
+/* ══════════════════════════════════════
+   ADD LOAN
+══════════════════════════════════════ */
 async function addLoan() {
-  const name = document.getElementById("name").value.trim();
-  const amount = +document.getElementById("amount").value;
-  const interest = +document.getElementById("interest").value || 0;
-  const tenure = +document.getElementById("tenure").value;
-  const start = document.getElementById("start").value;
+  const name     = document.getElementById('name').value.trim();
+  const amount   = +document.getElementById('amount').value;
+  const interest = +document.getElementById('interest').value || 0;
+  const tenure   = +document.getElementById('tenure').value;
+  const start    = document.getElementById('start').value;
 
   if (!name || !amount || !start || !tenure) {
-    showToast("Please fill all fields", "error");
+    showToast('Please fill all fields', 'error');
     return;
   }
 
-  const emi = calculateEMI(amount, interest, tenure);
-  let loan = { name, amount, emi, interest, start, tenure, payments: [], schedule: [] };
+  const emi  = calculateEMI(amount, interest, tenure);
+  const loan = { name, amount, emi, interest, start, tenure, payments:[], schedule:[] };
   generateSchedule(loan);
   loans.push(loan);
   await save();
 
-  // Reset form
-  ["name","amount","interest","tenure","emi","start"].forEach(id => document.getElementById(id).value = "");
-  showToast("Loan added successfully!", "success");
+  ['name','amount','interest','tenure','emi','start'].forEach(id => document.getElementById(id).value = '');
+  showToast('Loan added successfully!', 'success');
   render();
 }
 
-/* ── AMORTIZATION ── */
+/* ══════════════════════════════════════
+   AMORTIZATION SCHEDULE
+══════════════════════════════════════ */
 function generateSchedule(loan) {
   let balance = loan.amount;
-  let rate = loan.interest / 100 / 12;
-  let d = new Date(loan.start);
+  const rate  = loan.interest / 100 / 12;
+  const d     = new Date(loan.start);
   loan.schedule = [];
   loan.payments = [];
 
   for (let i = 0; i < loan.tenure; i++) {
     if (balance <= 0) break;
-    let interest = balance * rate;
-    let principal = Math.min(balance, loan.emi - interest);
+    const interest  = balance * rate;
+    const principal = Math.min(balance, loan.emi - interest);
     balance -= principal;
 
-    let nd = new Date(d);
+    const nd = new Date(d);
     nd.setMonth(d.getMonth() + i);
+    const dateStr = nd.toISOString().split('T')[0];
 
     loan.schedule.push({
-      date: nd.toISOString().split("T")[0],
-      interest: Math.round(interest),
+      date:      dateStr,
+      interest:  Math.round(interest),
       principal: Math.round(principal),
-      balance: Math.max(0, Math.round(balance))
+      balance:   Math.max(0, Math.round(balance))
     });
-
-    loan.payments.push({
-      paid: false,
-      date: nd.toISOString().split("T")[0]
-    });
+    loan.payments.push({ paid: false, date: dateStr });
   }
 }
 
-/* ── STATS ── */
+/* ══════════════════════════════════════
+   STATS
+══════════════════════════════════════ */
 function calculateLoanStats(loan) {
   let paidPrincipal = 0, paidInterest = 0, remaining = loan.amount;
   loan.schedule.forEach((m, i) => {
     if (loan.payments[i]?.paid) {
       paidPrincipal += m.principal;
-      paidInterest += m.interest;
-      remaining = m.balance;
+      paidInterest  += m.interest;
+      remaining      = m.balance;
     }
   });
   return { paidPrincipal, paidInterest, totalPaid: paidPrincipal + paidInterest, remaining };
@@ -152,243 +188,214 @@ function getDebtFreeDate() {
       if (!l.payments[i]?.paid) last = new Date(m.date);
     });
   });
-  if (!last) return "—";
-  return last.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' });
+  if (!last) return '—';
+  return last.toLocaleDateString('en-IN', { month:'short', year:'numeric' });
 }
 
-/* ── ACTIONS ── */
+/* ══════════════════════════════════════
+   NEXT PAYMENT DATE
+══════════════════════════════════════ */
+function getNextPaymentDate(loan) {
+  for (let i = 0; i < loan.schedule.length; i++) {
+    if (!loan.payments[i]?.paid) return loan.schedule[i].date;
+  }
+  return null;
+}
+
+function formatNextPayment(dateStr) {
+  if (!dateStr) return { label:'Fully Paid ✓', status:'paid' };
+  const today = new Date(); today.setHours(0,0,0,0);
+  const due   = new Date(dateStr); due.setHours(0,0,0,0);
+  const diff  = Math.round((due - today) / 86400000);
+  const fmt   = due.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
+  if (diff < 0)   return { label:`${fmt} (${Math.abs(diff)}d overdue)`, status:'overdue'  };
+  if (diff === 0) return { label:`${fmt} (Due Today!)`,                  status:'today'    };
+  if (diff <= 7)  return { label:`${fmt} (in ${diff}d)`,                 status:'soon'     };
+  return               { label:`${fmt} (in ${diff}d)`,                   status:'upcoming' };
+}
+
+/* ══════════════════════════════════════
+   LOAN ACTIONS
+══════════════════════════════════════ */
 function togglePayment(i, j) {
   loans[i].payments[j].paid = !loans[i].payments[j].paid;
-  save();
-  render();
+  save(); render();
 }
 
 async function deleteLoan(i) {
-  if (!confirm("Delete this loan?")) return;
+  if (!confirm('Delete this loan?')) return;
   loans.splice(i, 1);
-  await save();
-  render();
+  await save(); render();
 }
 
 function editLoan(i) {
-  let l = loans[i];
-  const name = prompt("Loan Name", l.name);
+  const l    = loans[i];
+  const name = prompt('Loan Name', l.name);
   if (!name) return;
-  l.name = name;
-  l.amount = +prompt("Amount", l.amount) || l.amount;
-  l.interest = +prompt("Interest %", l.interest) || 0;
-  l.tenure = +prompt("Tenure (months)", l.tenure) || l.tenure;
-  l.emi = calculateEMI(l.amount, l.interest, l.tenure);
+  l.name     = name;
+  l.amount   = +prompt('Amount',         l.amount)   || l.amount;
+  l.interest = +prompt('Interest %',     l.interest) || 0;
+  l.tenure   = +prompt('Tenure (months)',l.tenure)   || l.tenure;
+  l.emi      = calculateEMI(l.amount, l.interest, l.tenure);
   generateSchedule(l);
-  save();
-  render();
+  save(); render();
 }
 
 function toggleSchedule(id) {
-  const el = document.getElementById("sch-" + id);
-  el.classList.toggle("open");
+  document.getElementById('sch-' + id).classList.toggle('open');
 }
 
-/* ── EXPORT ── */
+/* ══════════════════════════════════════
+   EXPORT
+══════════════════════════════════════ */
 function exportToExcel() {
-  let rows = [["Loan", "Amount", "EMI", "Paid", "Remaining", "Interest Rate", "Start"]];
+  const rows = [['Loan','Amount','EMI','Paid','Remaining','Interest Rate','Start']];
   loans.forEach(l => {
-    let s = calculateLoanStats(l);
-    rows.push([l.name, l.amount, l.emi, s.totalPaid, s.remaining, l.interest + "%", l.start]);
+    const s = calculateLoanStats(l);
+    rows.push([l.name, l.amount, l.emi, s.totalPaid, s.remaining, l.interest+'%', l.start]);
   });
-  let csv = rows.map(r => r.join(",")).join("\n");
-  let blob = new Blob([csv], { type: "text/csv" });
-  let a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "emi-report.csv";
+  const csv  = rows.map(r => r.join(',')).join('\n');
+  const blob = new Blob([csv], { type:'text/csv' });
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(blob);
+  a.download = 'emi-report.csv';
   a.click();
-  showToast("CSV exported!", "success");
+  showToast('CSV exported!', 'success');
 }
 
 function generatePDF() {
   const { jsPDF } = window.jspdf;
-  let doc = new jsPDF();
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(18);
-  doc.text("EMI Tracker Report", 10, 15);
-  doc.setFontSize(10);
-  doc.setFont("helvetica", "normal");
-  doc.setTextColor(120);
+  const doc = new jsPDF();
+  doc.setFont('helvetica','bold'); doc.setFontSize(18);
+  doc.text('EMI Tracker Report', 10, 15);
+  doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(120);
   doc.text(new Date().toLocaleDateString(), 10, 22);
   let y = 34;
   loans.forEach((l, idx) => {
-    let s = calculateLoanStats(l);
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(0);
-    doc.setFontSize(13);
-    doc.text(`${idx + 1}. ${l.name}`, 10, y); y += 7;
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
-    doc.setTextColor(80);
+    const s = calculateLoanStats(l);
+    doc.setFont('helvetica','bold'); doc.setTextColor(0); doc.setFontSize(13);
+    doc.text(`${idx+1}. ${l.name}`, 10, y); y += 7;
+    doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(80);
     doc.text(`Amount: ₹${l.amount.toLocaleString('en-IN')}  |  EMI: ₹${l.emi.toLocaleString('en-IN')}  |  Rate: ${l.interest}%`, 14, y); y += 6;
     doc.text(`Paid: ₹${s.totalPaid.toLocaleString('en-IN')}  |  Remaining: ₹${s.remaining.toLocaleString('en-IN')}`, 14, y); y += 10;
     if (y > 270) { doc.addPage(); y = 20; }
   });
-  doc.save("emi-report.pdf");
-  showToast("PDF exported!", "success");
+  doc.save('emi-report.pdf');
+  showToast('PDF exported!', 'success');
 }
 
-/* ── TAB SWITCH ── */
+/* ══════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════ */
 function switchTab(id) {
-  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-  document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
-  document.getElementById("nav-" + id)?.classList.add("active");
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('nav-' + id)?.classList.add('active');
 }
 
-/* ── TOAST ── */
-function showToast(msg, type = "success") {
-  const t = document.createElement("div");
+/* ══════════════════════════════════════
+   TOAST
+══════════════════════════════════════ */
+function showToast(msg, type = 'success') {
+  const t = document.createElement('div');
   t.innerText = msg;
+  const isOk = type === 'success';
   Object.assign(t.style, {
-    position: "fixed", bottom: "100px", left: "50%", transform: "translateX(-50%)",
-    background: type === "success" ? "rgba(0,245,160,0.15)" : "rgba(255,77,109,0.15)",
-    border: `1px solid ${type === "success" ? "rgba(0,245,160,0.3)" : "rgba(255,77,109,0.3)"}`,
-    color: type === "success" ? "#00f5a0" : "#ff4d6d",
-    padding: "10px 20px", borderRadius: "12px", fontSize: "13px",
-    backdropFilter: "blur(12px)", zIndex: "9999", fontFamily: "'Space Grotesk', sans-serif",
-    fontWeight: "600", letterSpacing: "0.3px", transition: "opacity 0.3s",
-    whiteSpace: "nowrap"
+    position:'fixed', bottom:'100px', left:'50%', transform:'translateX(-50%)',
+    background: isOk ? 'rgba(0,245,160,0.15)' : 'rgba(255,77,109,0.15)',
+    border:`1px solid ${isOk ? 'rgba(0,245,160,0.3)' : 'rgba(255,77,109,0.3)'}`,
+    color: isOk ? '#00f5a0' : '#ff4d6d',
+    padding:'10px 20px', borderRadius:'12px', fontSize:'13px',
+    backdropFilter:'blur(12px)', zIndex:'9999',
+    fontFamily:"'Space Grotesk',sans-serif", fontWeight:'600',
+    letterSpacing:'0.3px', whiteSpace:'nowrap', transition:'opacity 0.3s'
   });
   document.body.appendChild(t);
-  setTimeout(() => { t.style.opacity = "0"; setTimeout(() => t.remove(), 300); }, 2200);
+  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 2200);
 }
 
-/* ── CHARTS ── */
-const CHART_DEFAULTS = {
-  color: "#00f5a0",
-  color2: "#00d9f5",
-  gridColor: "rgba(255,255,255,0.04)",
-  textColor: "rgba(200,210,240,0.5)",
-  font: "'Space Grotesk', sans-serif"
+/* ══════════════════════════════════════
+   CHARTS
+══════════════════════════════════════ */
+const CD = {
+  gridColor: 'rgba(255,255,255,0.04)',
+  textColor: 'rgba(200,210,240,0.5)',
+  font:      "'Space Grotesk',sans-serif"
 };
 
 function drawCharts() {
-  let labels = loans.map(l => l.name);
-  let data = loans.map(l => calculateLoanStats(l).remaining);
+  const labels = loans.map(l => l.name);
+  const data   = loans.map(l => calculateLoanStats(l).remaining);
 
   if (barChart) barChart.destroy();
-  barChart = new Chart(document.getElementById("barChart"), {
-    type: "bar",
-    data: {
-      labels,
-      datasets: [{
-        label: "Remaining ₹",
-        data,
-        backgroundColor: "rgba(0,245,160,0.15)",
-        borderColor: "#00f5a0",
-        borderWidth: 1.5,
-        borderRadius: 8,
-        borderSkipped: false
-      }]
-    },
-    options: {
-      responsive: true,
-      animation: { duration: 800 },
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { grid: { color: CHART_DEFAULTS.gridColor }, ticks: { color: CHART_DEFAULTS.textColor, font: { family: CHART_DEFAULTS.font, size: 11 } } },
-        y: { grid: { color: CHART_DEFAULTS.gridColor }, ticks: { color: CHART_DEFAULTS.textColor, font: { family: CHART_DEFAULTS.font, size: 11 }, callback: v => "₹" + v.toLocaleString('en-IN') } }
+  barChart = new Chart(document.getElementById('barChart'), {
+    type: 'bar',
+    data: { labels, datasets:[{ label:'Remaining ₹', data, backgroundColor:'rgba(0,245,160,0.15)', borderColor:'#00f5a0', borderWidth:1.5, borderRadius:8, borderSkipped:false }] },
+    options: { responsive:true, animation:{duration:800}, plugins:{legend:{display:false}},
+      scales:{
+        x:{ grid:{color:CD.gridColor}, ticks:{color:CD.textColor,font:{family:CD.font,size:11}} },
+        y:{ grid:{color:CD.gridColor}, ticks:{color:CD.textColor,font:{family:CD.font,size:11},callback:v=>'₹'+v.toLocaleString('en-IN')} }
       }
     }
   });
 
   if (loans.length > 0) {
-    let l = loans[0];
-    let balances = l.schedule.map(m => m.balance);
-
+    const l = loans[0];
+    const balances = l.schedule.map(m => m.balance);
     if (lineChart) lineChart.destroy();
-    lineChart = new Chart(document.getElementById("lineChart"), {
-      type: "line",
-      data: {
-        labels: balances.map((_, i) => "M" + (i + 1)),
-        datasets: [{
-          label: l.name + " balance",
-          data: balances,
-          tension: 0.4,
-          borderColor: "#00d9f5",
-          borderWidth: 2,
-          pointRadius: 0,
-          fill: true,
-          backgroundColor: "rgba(0,217,245,0.06)"
-        }]
-      },
-      options: {
-        responsive: true,
-        animation: { duration: 1000 },
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { grid: { color: CHART_DEFAULTS.gridColor }, ticks: { color: CHART_DEFAULTS.textColor, font: { family: CHART_DEFAULTS.font, size: 10 }, maxTicksLimit: 8 } },
-          y: { grid: { color: CHART_DEFAULTS.gridColor }, ticks: { color: CHART_DEFAULTS.textColor, font: { family: CHART_DEFAULTS.font, size: 11 }, callback: v => "₹" + v.toLocaleString('en-IN') } }
+    lineChart = new Chart(document.getElementById('lineChart'), {
+      type: 'line',
+      data: { labels:balances.map((_,i)=>'M'+(i+1)), datasets:[{ label:l.name+' balance', data:balances, tension:0.4, borderColor:'#00d9f5', borderWidth:2, pointRadius:0, fill:true, backgroundColor:'rgba(0,217,245,0.06)' }] },
+      options: { responsive:true, animation:{duration:1000}, plugins:{legend:{display:false}},
+        scales:{
+          x:{ grid:{color:CD.gridColor}, ticks:{color:CD.textColor,font:{family:CD.font,size:10},maxTicksLimit:8} },
+          y:{ grid:{color:CD.gridColor}, ticks:{color:CD.textColor,font:{family:CD.font,size:11},callback:v=>'₹'+v.toLocaleString('en-IN')} }
         }
       }
     });
   }
 
-  let totalPaid = 0, totalInterest = 0;
-  loans.forEach(l => {
-    let s = calculateLoanStats(l);
-    totalPaid += s.paidPrincipal;
-    totalInterest += s.paidInterest;
-  });
+  let totalPrincipal = 0, totalInterest = 0;
+  loans.forEach(l => { const s=calculateLoanStats(l); totalPrincipal+=s.paidPrincipal; totalInterest+=s.paidInterest; });
 
   if (pieChart) pieChart.destroy();
-  pieChart = new Chart(document.getElementById("pieChart"), {
-    type: "doughnut",
-    data: {
-      labels: ["Principal Paid", "Interest Paid"],
-      datasets: [{
-        data: [totalPaid || 1, totalInterest || 0],
-        backgroundColor: ["rgba(0,245,160,0.8)", "rgba(0,217,245,0.6)"],
-        borderColor: ["#00f5a0", "#00d9f5"],
-        borderWidth: 1.5,
-        hoverOffset: 6
-      }]
-    },
-    options: {
-      responsive: true,
-      cutout: "65%",
-      animation: { duration: 900 },
-      plugins: {
-        legend: {
-          position: "bottom",
-          labels: { color: CHART_DEFAULTS.textColor, font: { family: CHART_DEFAULTS.font, size: 11 }, padding: 20, usePointStyle: true, pointStyleWidth: 8 }
-        }
-      }
+  pieChart = new Chart(document.getElementById('pieChart'), {
+    type: 'doughnut',
+    data: { labels:['Principal Paid','Interest Paid'], datasets:[{ data:[totalPrincipal||1,totalInterest||0], backgroundColor:['rgba(0,245,160,0.8)','rgba(0,217,245,0.6)'], borderColor:['#00f5a0','#00d9f5'], borderWidth:1.5, hoverOffset:6 }] },
+    options: { responsive:true, cutout:'65%', animation:{duration:900},
+      plugins:{ legend:{ position:'bottom', labels:{color:CD.textColor,font:{family:CD.font,size:11},padding:20,usePointStyle:true,pointStyleWidth:8} } }
     }
   });
 }
 
-/* ── RENDER ── */
+/* ══════════════════════════════════════
+   BUILD LOAN CARD
+══════════════════════════════════════ */
 function buildLoanCard(l, i, compact = false) {
-  let s = calculateLoanStats(l);
-  let paidCount = l.payments.filter(p => p.paid).length;
-  let pct = Math.round((paidCount / l.tenure) * 100);
+  const s         = calculateLoanStats(l);
+  const paidCount = l.payments.filter(p => p.paid).length;
+  const pct       = Math.round((paidCount / l.tenure) * 100);
 
   const nextDateStr = getNextPaymentDate(l);
-  const next = formatNextPayment(nextDateStr);
-  const nc = {
+  const next        = formatNextPayment(nextDateStr);
+  const ncMap = {
     overdue:  { bg:'rgba(255,77,109,0.12)',  border:'rgba(255,77,109,0.28)',  color:'#ff4d6d', icon:'⚠️' },
     today:    { bg:'rgba(255,214,10,0.12)',  border:'rgba(255,214,10,0.28)',  color:'#ffd60a', icon:'🔔' },
     soon:     { bg:'rgba(255,170,0,0.10)',   border:'rgba(255,170,0,0.25)',   color:'#ffaa00', icon:'⏰' },
-    upcoming: { bg:'rgba(0,245,160,0.07)',   border:'rgba(0,245,160,0.2)',    color:'var(--accent)', icon:'📅' },
-    paid:     { bg:'rgba(0,245,160,0.07)',   border:'rgba(0,245,160,0.2)',    color:'var(--accent)', icon:'✅' },
-  }[next.status];
+    upcoming: { bg:'rgba(0,245,160,0.07)',   border:'rgba(0,245,160,0.20)',   color:'var(--accent)', icon:'📅' },
+    paid:     { bg:'rgba(0,245,160,0.07)',   border:'rgba(0,245,160,0.20)',   color:'var(--accent)', icon:'✅' },
+  };
+  const nc = ncMap[next.status];
 
-  let scheduleRows = l.schedule.map((m, j) => `
+  const scheduleRows = l.schedule.map((m, j) => `
     <div class="sch-row ${l.payments[j]?.paid ? 'paid' : ''}">
       <span>${m.date}</span>
       <span>₹${m.principal.toLocaleString('en-IN')}</span>
       <span>₹${m.interest.toLocaleString('en-IN')}</span>
       <span>₹${m.balance.toLocaleString('en-IN')}</span>
       <button class="pay-btn" onclick="togglePayment(${i},${j})">${l.payments[j]?.paid ? '✓' : '·'}</button>
-    </div>
-  `).join('');
+    </div>`).join('');
 
   return `
   <div class="loan-card">
@@ -444,165 +451,56 @@ function buildLoanCard(l, i, compact = false) {
       </div>
       ${scheduleRows}
     </div>
-  </div>
-  `;
-}
-  let s = calculateLoanStats(l);
-  let paidCount = l.payments.filter(p => p.paid).length;
-  let pct = Math.round((paidCount / l.tenure) * 100);
-
-  let scheduleRows = l.schedule.map((m, j) => `
-    <div class="sch-row ${l.payments[j]?.paid ? 'paid' : ''}">
-      <span>${m.date}</span>
-      <span>₹${m.principal.toLocaleString('en-IN')}</span>
-      <span>₹${m.interest.toLocaleString('en-IN')}</span>
-      <span>₹${m.balance.toLocaleString('en-IN')}</span>
-      <button class="pay-btn" onclick="togglePayment(${i},${j})">${l.payments[j]?.paid ? '✓' : '·'}</button>
-    </div>
-  `).join('');
-
-  return `
-  <div class="loan-card">
-    <div class="loan-header">
-      <div>
-        <div class="loan-name">${l.name}</div>
-        <span class="badge badge-green" style="margin-top:4px;">₹${l.emi.toLocaleString('en-IN')}/mo</span>
-      </div>
-      <div class="loan-actions">
-        <button class="btn-icon" onclick="editLoan(${i})"><i data-lucide="pencil" style="width:14px;height:14px;"></i></button>
-        <button class="btn-icon del" onclick="deleteLoan(${i})"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
-      </div>
-    </div>
-
-    <div class="loan-stats">
-      <div class="loan-stat-item">
-        <div class="loan-stat-label">Paid</div>
-        <div class="loan-stat-value green">₹${s.totalPaid.toLocaleString('en-IN')}</div>
-      </div>
-      <div class="loan-stat-item">
-        <div class="loan-stat-label">Remaining</div>
-        <div class="loan-stat-value red">₹${s.remaining.toLocaleString('en-IN')}</div>
-      </div>
-      <div class="loan-stat-item">
-        <div class="loan-stat-label">Rate</div>
-        <div class="loan-stat-value">${l.interest}%</div>
-      </div>
-      <div class="loan-stat-item">
-        <div class="loan-stat-label">Progress</div>
-        <div class="loan-stat-value">${paidCount}/${l.tenure} EMIs</div>
-      </div>
-    </div>
-
-    <div class="progress-wrap">
-      <div class="progress-label">
-        <span>Payment progress</span>
-        <span>${pct}%</span>
-      </div>
-      <div class="progress-track">
-        <div class="progress-fill" style="width:${pct}%"></div>
-      </div>
-    </div>
-
-    <button class="schedule-toggle" onclick="toggleSchedule('${i}-${compact ? 'd' : 'l'}')">
-      View amortization schedule ↓
-    </button>
-    <div class="schedule-wrap" id="sch-${i}-${compact ? 'd' : 'l'}">
-      <div class="sch-row header-row">
-        <span>Date</span><span>Principal</span><span>Interest</span><span>Balance</span><span></span>
-      </div>
-      ${scheduleRows}
-    </div>
-  </div>
-  `;
+  </div>`;
 }
 
+/* ══════════════════════════════════════
+   RENDER
+══════════════════════════════════════ */
 function render() {
-  let container = document.getElementById("loans");
-  let dash = document.getElementById("loansDashboard");
-  container.innerHTML = "";
-  dash.innerHTML = "";
+  const container = document.getElementById('loans');
+  const dash      = document.getElementById('loansDashboard');
+  container.innerHTML = '';
+  dash.innerHTML      = '';
 
   let totalPaid = 0, totalRemaining = 0, totalEMIsLeft = 0;
 
   if (loans.length === 0) {
     const empty = `<div class="empty-state"><div class="empty-icon">◈</div><p>No loans yet. Add one above!</p></div>`;
     container.innerHTML = empty;
-    dash.innerHTML = empty;
+    dash.innerHTML      = empty;
   } else {
     loans.forEach((l, i) => {
-      let s = calculateLoanStats(l);
-      totalPaid += s.totalPaid;
+      const s = calculateLoanStats(l);
+      totalPaid      += s.totalPaid;
       totalRemaining += s.remaining;
-      totalEMIsLeft += l.schedule.filter((_, j) => !l.payments[j]?.paid).length;
-
-      dash.innerHTML += buildLoanCard(l, i, true);
+      totalEMIsLeft  += l.schedule.filter((_,j) => !l.payments[j]?.paid).length;
+      dash.innerHTML      += buildLoanCard(l, i, true);
       container.innerHTML += buildLoanCard(l, i, false);
     });
   }
 
   const totalMonthlyEMI = loans.reduce((sum, l) => {
-    const hasUnpaid = l.payments.some(p => !p.paid);
-    return sum + (hasUnpaid ? l.emi : 0);
+    return sum + (l.payments.some(p => !p.paid) ? l.emi : 0);
   }, 0);
 
-  document.getElementById("totalPaid").innerText = totalPaid.toLocaleString('en-IN');
-  document.getElementById("totalRemaining").innerText = totalRemaining.toLocaleString('en-IN');
-  document.getElementById("monthsLeft").innerText = totalEMIsLeft;
-  document.getElementById("debtFreeDate").innerText = getDebtFreeDate();
-  document.getElementById("totalMonthlyEMI").innerText = totalMonthlyEMI.toLocaleString('en-IN');
+  document.getElementById('totalPaid').innerText       = totalPaid.toLocaleString('en-IN');
+  document.getElementById('totalRemaining').innerText  = totalRemaining.toLocaleString('en-IN');
+  document.getElementById('monthsLeft').innerText      = totalEMIsLeft;
+  document.getElementById('debtFreeDate').innerText    = getDebtFreeDate();
+  document.getElementById('totalMonthlyEMI').innerText = totalMonthlyEMI.toLocaleString('en-IN');
 
   drawCharts();
   lucide.createIcons();
 }
 
-/* ── THEME TOGGLE ── */
-function toggleTheme() {
-  const isLight = document.body.classList.toggle("light");
-  document.getElementById("themeIcon").textContent = isLight ? "🌙" : "☀️";
-  localStorage.setItem("emi-theme", isLight ? "light" : "dark");
-}
-
-// Restore saved theme on load
-function applyStoredTheme() {
-  const saved = localStorage.getItem("emi-theme");
-  if (saved === "light") {
-    document.body.classList.add("light");
-    const icon = document.getElementById("themeIcon");
-    if (icon) icon.textContent = "🌙";
-  }
-}
-
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", applyStoredTheme);
-} else {
-  applyStoredTheme();
-}
-
-/* ── NEXT PAYMENT DATE ── */
-function getNextPaymentDate(loan) {
-  for (let i = 0; i < loan.schedule.length; i++) {
-    if (!loan.payments[i]?.paid) return loan.schedule[i].date;
-  }
-  return null;
-}
-
-function formatNextPayment(dateStr) {
-  if (!dateStr) return { label: "Fully Paid ✓", status: "paid" };
-  const today = new Date(); today.setHours(0,0,0,0);
-  const due = new Date(dateStr); due.setHours(0,0,0,0);
-  const diff = Math.round((due - today) / (1000*60*60*24));
-  const formatted = due.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
-  if (diff < 0)   return { label: `${formatted} (${Math.abs(diff)}d overdue)`, status: "overdue" };
-  if (diff === 0) return { label: `${formatted} (Due Today!)`,                  status: "today"   };
-  if (diff <= 7)  return { label: `${formatted} (in ${diff}d)`,                 status: "soon"    };
-  return           { label: `${formatted} (in ${diff}d)`,                        status: "upcoming"};
-}
-
-/* ── NAV HIDE ON SCROLL ── */
+/* ══════════════════════════════════════
+   NAV AUTO-HIDE ON SCROLL
+══════════════════════════════════════ */
 let lastScroll = 0;
-window.addEventListener("scroll", () => {
-  const nav = document.querySelector(".nav");
+window.addEventListener('scroll', () => {
+  const nav = document.querySelector('.nav');
   const cur = window.pageYOffset;
-  nav.classList.toggle("hide", cur > lastScroll && cur > 60);
+  nav.classList.toggle('hide', cur > lastScroll && cur > 60);
   lastScroll = cur;
 });
