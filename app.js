@@ -563,15 +563,20 @@ function toggleTheme() {
 }
 
 // Restore saved theme on load
-(function() {
-  if (localStorage.getItem("emi-theme") === "light") {
+function applyStoredTheme() {
+  const saved = localStorage.getItem("emi-theme");
+  if (saved === "light") {
     document.body.classList.add("light");
-    document.addEventListener("DOMContentLoaded", () => {
-      const icon = document.getElementById("themeIcon");
-      if (icon) icon.textContent = "🌙";
-    });
+    const icon = document.getElementById("themeIcon");
+    if (icon) icon.textContent = "🌙";
   }
-})();
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", applyStoredTheme);
+} else {
+  applyStoredTheme();
+}
 
 /* ── NEXT PAYMENT DATE ── */
 function getNextPaymentDate(loan) {
