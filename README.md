@@ -45,7 +45,9 @@ So I built this. It's a simple web app that lives in your browser, syncs to your
 
 ## Screenshots
 
-> Dark mode dashboard with animated glassmorphism cards, 3D tilt effects, and floating orb background
+<img width="1920" height="1020" alt="image" src="https://github.com/user-attachments/assets/378eb6bf-08cb-4379-ae83-f769e14abac1" />
+
+
 
 ---
 
