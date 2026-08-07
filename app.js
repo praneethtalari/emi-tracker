@@ -250,15 +250,72 @@ async function deleteLoan(i) {
 }
 
 function editLoan(i) {
-  const l=loans[i];
-  const name=prompt('Loan Name',l.name); if (!name) return;
-  l.name=name;
-  l.amount  = +prompt('Amount',l.amount)           || l.amount;
-  l.interest= +prompt('Interest %',l.interest)     || 0;
-  l.tenure  = +prompt('Tenure (months)',l.tenure)  || l.tenure;
-  l.emi=calculateEMI(l.amount,l.interest,l.tenure);
+  const l = loans[i];
+  // Populate modal fields
+  document.getElementById('editLoanIndex').value   = i;
+  document.getElementById('editName').value        = l.name;
+  document.getElementById('editAmount').value      = l.amount;
+  document.getElementById('editInterest').value    = l.interest;
+  document.getElementById('editTenure').value      = l.tenure;
+  document.getElementById('editStart').value       = l.start;
+  updateEditEMI();
+  openEditModal();
+}
+
+function updateEditEMI() {
+  const amount   = +document.getElementById('editAmount').value;
+  const interest = +document.getElementById('editInterest').value || 0;
+  const tenure   = +document.getElementById('editTenure').value;
+  if (amount && tenure) {
+    document.getElementById('editEmi').value = '₹' + calculateEMI(amount, interest, tenure).toLocaleString('en-IN');
+  }
+}
+
+function openEditModal() {
+  const modal = document.getElementById('editLoanModal');
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeEditModal() {
+  const modal = document.getElementById('editLoanModal');
+  modal.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+async function saveEditLoan() {
+  const i        = +document.getElementById('editLoanIndex').value;
+  const name     = document.getElementById('editName').value.trim();
+  const amount   = +document.getElementById('editAmount').value;
+  const interest = +document.getElementById('editInterest').value || 0;
+  const tenure   = +document.getElementById('editTenure').value;
+  const start    = document.getElementById('editStart').value;
+
+  if (!name || !amount || !tenure || !start) {
+    showToast('Please fill all fields', 'error'); return;
+  }
+
+  const l = loans[i];
+  // Preserve existing payment statuses by index
+  const oldPayments = [...(l.payments || [])];
+
+  l.name     = name;
+  l.amount   = amount;
+  l.interest = interest;
+  l.tenure   = tenure;
+  l.start    = start;
+  l.emi      = calculateEMI(amount, interest, tenure);
+
+  // Regenerate schedule but keep old payment statuses where possible
   generateSchedule(l);
-  save(); render();
+  l.payments.forEach((p, j) => {
+    if (oldPayments[j]) p.paid = oldPayments[j].paid;
+  });
+
+  await save();
+  closeEditModal();
+  showToast('✓ Loan updated successfully!', 'success');
+  render();
 }
 
 function toggleSchedule(id) {
@@ -505,8 +562,9 @@ function buildLoanCard(l, i, compact=false) {
     </div>`).join('');
 
   const uid = `${i}-${compact?'d':'l'}`;
+  const fullyPaid = isLoanFullyPaid(l);
   return `
-  <div class="loan-card" style="animation-delay:${i*0.07}s">
+  <div class="loan-card${fullyPaid ? ' fully-paid' : ''}" style="animation-delay:${i*0.07}s">
     <div class="loan-card-accent"></div>
 
     <div class="loan-top">
@@ -595,12 +653,18 @@ function animateRing(pct) {
 /* ═══════════════════════════════════════
    RENDER
 ═══════════════════════════════════════ */
+function isLoanFullyPaid(l) {
+  return l.payments.length > 0 && l.payments.every(p => p.paid);
+}
+
 function render() {
   const container = document.getElementById('loans');
   const dash      = document.getElementById('loansDashboard');
   container.innerHTML = ''; dash.innerHTML = '';
 
   let totalPaid=0, totalRemaining=0, totalEMIsLeft=0;
+  const activeLoans    = loans.filter(l => !isLoanFullyPaid(l));
+  const completedLoans = loans.filter(l =>  isLoanFullyPaid(l));
 
   if (loans.length === 0) {
     const empty = `
@@ -611,14 +675,44 @@ function render() {
       </div>`;
     container.innerHTML = empty; dash.innerHTML = empty;
   } else {
-    loans.forEach((l,i) => {
+    // Dashboard: only active (unpaid) loans
+    if (activeLoans.length === 0) {
+      dash.innerHTML = `
+        <div class="empty-state">
+          <span class="empty-icon">🎉</span>
+          <h3>All Loans Paid Off!</h3>
+          <p>Congratulations — you're completely debt-free!</p>
+        </div>`;
+    } else {
+      activeLoans.forEach(l => {
+        const i = loans.indexOf(l);
+        const s = calculateLoanStats(l);
+        totalPaid      += s.totalPaid;
+        totalRemaining += s.remaining;
+        totalEMIsLeft  += l.schedule.filter((_,j) => !l.payments[j]?.paid).length;
+        dash.innerHTML += buildLoanCard(l, i, true);
+      });
+    }
+
+    // Also accumulate stats from completed loans for accurate totals
+    completedLoans.forEach(l => {
       const s = calculateLoanStats(l);
-      totalPaid      += s.totalPaid;
-      totalRemaining += s.remaining;
-      totalEMIsLeft  += l.schedule.filter((_,j) => !l.payments[j]?.paid).length;
-      const card = buildLoanCard(l,i,false);
-      dash.innerHTML      += buildLoanCard(l,i,true);
-      container.innerHTML += card;
+      totalPaid += s.totalPaid;
+    });
+
+    // Dashboard: show a completed badge if any loans are done
+    if (completedLoans.length > 0) {
+      dash.innerHTML += `
+        <div class="completed-badge">
+          <span class="completed-badge-icon">✅</span>
+          <span><strong>${completedLoans.length}</strong> loan${completedLoans.length>1?'s':''} fully paid — view in <button class="completed-link" onclick="switchTab('loansScreen')">Loans tab</button></span>
+        </div>`;
+    }
+
+    // Loans screen: show ALL loans (active + completed, completed at bottom)
+    [...activeLoans, ...completedLoans].forEach(l => {
+      const i = loans.indexOf(l);
+      container.innerHTML += buildLoanCard(l, i, false);
     });
   }
 
