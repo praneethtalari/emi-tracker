@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>EMI Tracker Pro</title>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -303,6 +304,54 @@
     <span>Analytics</span>
   </button>
 </nav>
+
+
+<!-- ═══ EDIT LOAN MODAL ═══ -->
+<div id="editLoanModal" class="modal-backdrop" onclick="if(event.target===this)closeEditModal()">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title-wrap">
+        <div class="modal-icon"><i data-lucide="pencil"></i></div>
+        <div class="modal-title">Edit Loan</div>
+      </div>
+      <button class="modal-close" onclick="closeEditModal()"><i data-lucide="x"></i></button>
+    </div>
+    <input type="hidden" id="editLoanIndex">
+    <div class="form-grid">
+      <div class="input-group full-width">
+        <label>Loan Name</label>
+        <input id="editName" placeholder="e.g. Home Loan, Car Loan…">
+      </div>
+      <div class="input-group">
+        <label>Principal Amount ₹</label>
+        <input id="editAmount" type="number" placeholder="500000" oninput="updateEditEMI()">
+      </div>
+      <div class="input-group">
+        <label>Annual Interest %</label>
+        <input id="editInterest" type="number" placeholder="8.5" oninput="updateEditEMI()">
+      </div>
+      <div class="input-group">
+        <label>Tenure (Months)</label>
+        <input id="editTenure" type="number" placeholder="24" oninput="updateEditEMI()">
+      </div>
+      <div class="input-group">
+        <label>Monthly EMI (Auto)</label>
+        <input id="editEmi" placeholder="Calculated automatically" readonly>
+      </div>
+      <div class="input-group full-width">
+        <label>Start Date</label>
+        <input id="editStart" type="date">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-cancel-btn" onclick="closeEditModal()">Cancel</button>
+      <button class="modal-save-btn" onclick="saveEditLoan()">
+        <i data-lucide="save" style="width:16px;height:16px;"></i>
+        Save Changes
+      </button>
+    </div>
+  </div>
+</div>
 
 <script src="app.js"></script>
 <script>
