@@ -20,19 +20,46 @@ let barChart, lineChart, pieChart, radarChart;
 function initParticles() {
   const container = document.getElementById('particles');
   if (!container) return;
-  for (let i = 0; i < 18; i++) {
+  const colors = ['#00f5a0','#00d4ff','#7b2fff','#ff6b35','#ff2d78','#ffd60a'];
+  for (let i = 0; i < 30; i++) {
     const p = document.createElement('div');
     p.className = 'particle';
-    const size = Math.random() * 3 + 1;
-    const colors = ['#00f5a0','#00d9f5','#a855f7','#ff9f43'];
+    const size = Math.random() * 2.5 + 0.5;
+    const color = colors[Math.floor(Math.random() * colors.length)];
     p.style.cssText = `
       width:${size}px; height:${size}px;
       left:${Math.random()*100}%;
-      background:${colors[Math.floor(Math.random()*colors.length)]};
-      animation-duration:${Math.random()*20+15}s;
-      animation-delay:${Math.random()*15}s;
+      background:${color};
+      box-shadow: 0 0 ${size*3}px ${color};
+      animation-duration:${Math.random()*25+20}s;
+      animation-delay:${Math.random()*20}s;
+      border-radius:50%;
     `;
     container.appendChild(p);
+  }
+
+  // Cursor ripple effect
+  document.addEventListener('click', e => {
+    const ripple = document.createElement('div');
+    ripple.style.cssText = `
+      position:fixed; left:${e.clientX}px; top:${e.clientY}px;
+      width:0; height:0; border-radius:50%;
+      background:transparent;
+      border:2px solid rgba(0,245,160,0.6);
+      transform:translate(-50%,-50%);
+      pointer-events:none; z-index:9998;
+      animation:rippleOut 0.6s ease-out forwards;
+    `;
+    document.body.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 700);
+  });
+
+  // Add ripple keyframes once
+  if (!document.getElementById('rippleStyle')) {
+    const s = document.createElement('style');
+    s.id = 'rippleStyle';
+    s.textContent = '@keyframes rippleOut{to{width:80px;height:80px;opacity:0;border-width:1px;}}';
+    document.head.appendChild(s);
   }
 }
 
@@ -45,10 +72,19 @@ function initTilt() {
       const r = el.getBoundingClientRect();
       const x = (e.clientX - r.left) / r.width  - 0.5;
       const y = (e.clientY - r.top)  / r.height - 0.5;
-      el.style.transform = `perspective(600px) rotateX(${-y*8}deg) rotateY(${x*8}deg) translateY(-4px)`;
+      el.style.transform = `perspective(800px) rotateX(${-y*12}deg) rotateY(${x*12}deg) translateY(-6px) scale(1.02)`;
+      el.style.transition = 'transform 0.1s ease';
+      // Dynamic highlight follow
+      const glow = el.querySelector('.stat-glow');
+      if (glow) {
+        glow.style.transform = `translate(${x*40}px, ${y*40}px)`;
+      }
     });
     el.addEventListener('mouseleave', () => {
       el.style.transform = '';
+      el.style.transition = 'transform 0.6s cubic-bezier(0.16,1,0.3,1)';
+      const glow = el.querySelector('.stat-glow');
+      if (glow) glow.style.transform = '';
     });
   });
 }
@@ -389,9 +425,9 @@ function showToast(msg, type='success') {
 function getChartColors() {
   const isLight = document.body.classList.contains('light');
   return {
-    grid:  isLight ? 'rgba(0,0,0,0.06)'      : 'rgba(255,255,255,0.04)',
-    text:  isLight ? 'rgba(13,27,62,0.5)'    : 'rgba(200,220,255,0.5)',
-    bg:    isLight ? 'rgba(255,255,255,0.8)' : 'rgba(5,12,26,0.0)',
+    grid:  isLight ? 'rgba(80,120,200,0.08)'  : 'rgba(0,245,160,0.04)',
+    text:  isLight ? 'rgba(10,22,40,0.45)'    : 'rgba(180,210,255,0.45)',
+    bg:    isLight ? 'rgba(255,255,255,0.0)'  : 'rgba(2,4,8,0.0)',
   };
 }
 
