@@ -20,7 +20,7 @@ let barChart, lineChart, pieChart, radarChart;
 function initParticles() {
   const container = document.getElementById('particles');
   if (!container) return;
-  const colors = ['#00f5a0','#00d4ff','#7b2fff','#ff6b35','#ff2d78','#ffd60a'];
+  const colors = ['#007BA7','#36B7DE','#FF2D95','#FF7FBE','#FF2D95','#FFAAD2'];
   for (let i = 0; i < 30; i++) {
     const p = document.createElement('div');
     p.className = 'particle';
@@ -45,7 +45,7 @@ function initParticles() {
       position:fixed; left:${e.clientX}px; top:${e.clientY}px;
       width:0; height:0; border-radius:50%;
       background:transparent;
-      border:2px solid rgba(0,245,160,0.6);
+      border:2px solid rgba(0,123,167,0.6);
       transform:translate(-50%,-50%);
       pointer-events:none; z-index:9998;
       animation:rippleOut 0.6s ease-out forwards;
@@ -376,21 +376,21 @@ function exportToExcel() {
 
 function generatePDF() {
   const {jsPDF}=window.jspdf, doc=new jsPDF();
-  doc.setFillColor(5,12,26); doc.rect(0,0,210,297,'F');
-  doc.setFont('helvetica','bold'); doc.setFontSize(20); doc.setTextColor(0,245,160);
+  doc.setFillColor(10,10,10); doc.rect(0,0,210,297,'F');
+  doc.setFont('helvetica','bold'); doc.setFontSize(20); doc.setTextColor(0,123,167);
   doc.text('EMI Tracker Pro — Report',10,18);
-  doc.setFontSize(10); doc.setTextColor(150,170,200);
+  doc.setFontSize(10); doc.setTextColor(120,120,120);
   doc.text('Generated: '+new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'}),10,26);
   let y=38;
   loans.forEach((l,idx) => {
     const s=calculateLoanStats(l);
     doc.setFillColor(20,30,50); doc.roundedRect(8,y-5,194,38,4,4,'F');
-    doc.setFont('helvetica','bold'); doc.setTextColor(0,245,160); doc.setFontSize(13);
+    doc.setFont('helvetica','bold'); doc.setTextColor(0,123,167); doc.setFontSize(13);
     doc.text(`${idx+1}. ${l.name}`,12,y+4); y+=10;
-    doc.setFont('helvetica','normal'); doc.setTextColor(180,200,230); doc.setFontSize(9);
+    doc.setFont('helvetica','normal'); doc.setTextColor(90,90,90); doc.setFontSize(9);
     doc.text(`Amount: ₹${l.amount.toLocaleString('en-IN')}  |  EMI: ₹${l.emi.toLocaleString('en-IN')}  |  Rate: ${l.interest}%  |  End: ${getLoanEndDate(l)}`,12,y+4); y+=8;
     doc.text(`Paid: ₹${s.totalPaid.toLocaleString('en-IN')}  |  Remaining: ₹${s.remaining.toLocaleString('en-IN')}`,12,y+4); y+=16;
-    if (y>260) { doc.addPage(); doc.setFillColor(5,12,26); doc.rect(0,0,210,297,'F'); y=20; }
+    if (y>260) { doc.addPage(); doc.setFillColor(10,10,10); doc.rect(0,0,210,297,'F'); y=20; }
   });
   doc.save('emi-tracker-pro-report.pdf');
   showToast('✓ PDF exported!','success');
@@ -425,9 +425,9 @@ function showToast(msg, type='success') {
 function getChartColors() {
   const isLight = document.body.classList.contains('light');
   return {
-    grid:  isLight ? 'rgba(80,120,200,0.08)'  : 'rgba(0,245,160,0.04)',
-    text:  isLight ? 'rgba(10,22,40,0.45)'    : 'rgba(180,210,255,0.45)',
-    bg:    isLight ? 'rgba(255,255,255,0.0)'  : 'rgba(2,4,8,0.0)',
+    grid:  isLight ? 'rgba(0,123,167,0.08)'  : 'rgba(0,123,167,0.04)',
+    text:  isLight ? 'rgba(10,10,10,0.45)'    : 'rgba(160,185,195,0.45)',
+    bg:    isLight ? 'rgba(255,255,255,0.0)'  : 'rgba(10,10,10,0.0)',
   };
 }
 
@@ -457,16 +457,16 @@ function drawCharts() {
       labels,
       datasets:[
         { label:'Remaining', data:remaining,
-          backgroundColor:'rgba(0,217,245,0.2)', borderColor:'#00d9f5', borderWidth:2,
+          backgroundColor:'rgba(54,183,222,0.2)', borderColor:'#36B7DE', borderWidth:2,
           borderRadius:8, borderSkipped:false },
         { label:'Paid', data:paid,
-          backgroundColor:'rgba(0,245,160,0.2)', borderColor:'#00f5a0', borderWidth:2,
+          backgroundColor:'rgba(0,123,167,0.2)', borderColor:'#007BA7', borderWidth:2,
           borderRadius:8, borderSkipped:false }
       ]
     },
     options:{...baseOpts,
       plugins:{...baseOpts.plugins,
-        tooltip:{ backgroundColor:'rgba(5,12,26,0.9)', titleColor:'#e8f0fe', bodyColor:'#a0b0d0', padding:12, cornerRadius:10, titleFont:{family:font,weight:'bold'}, callbacks:{label:ctx=>' ₹'+ctx.raw.toLocaleString('en-IN')} }
+        tooltip:{ backgroundColor:'rgba(10,10,10,0.9)', titleColor:'#F2F2F2', bodyColor:'#C9C9C9', padding:12, cornerRadius:10, titleFont:{family:font,weight:'bold'}, callbacks:{label:ctx=>' ₹'+ctx.raw.toLocaleString('en-IN')} }
       },
       scales:scaleOpts
     }
@@ -475,7 +475,7 @@ function drawCharts() {
   /* LINE CHART */
   if (lineChart) lineChart.destroy();
   const lineDatasets = loans.map((l,i)=>{
-    const colors = ['#00f5a0','#00d9f5','#a855f7','#ff9f43','#ff4d6d','#ffd60a'];
+    const colors = ['#007BA7','#36B7DE','#FF2D95','#FF7FBE','#FF2D95','#FFAAD2'];
     const c = colors[i % colors.length];
     return {
       label:l.name,
@@ -486,7 +486,7 @@ function drawCharts() {
   });
   // patch fill backgrounds
   loans.forEach((l,i)=>{
-    const fills=['rgba(0,245,160,0.06)','rgba(0,217,245,0.06)','rgba(168,85,247,0.06)','rgba(255,159,67,0.06)'];
+    const fills=['rgba(0,123,167,0.06)','rgba(54,183,222,0.06)','rgba(255,45,149,0.06)','rgba(255,127,190,0.06)'];
     lineDatasets[i].backgroundColor = fills[i % fills.length];
   });
 
@@ -495,7 +495,7 @@ function drawCharts() {
     data:{ labels:loans[0].schedule.map((_,i)=>'M'+(i+1)), datasets:lineDatasets },
     options:{...baseOpts,
       plugins:{...baseOpts.plugins,
-        tooltip:{ mode:'index', intersect:false, backgroundColor:'rgba(5,12,26,0.9)', titleColor:'#e8f0fe', bodyColor:'#a0b0d0', padding:12, cornerRadius:10, titleFont:{family:font,weight:'bold'}, callbacks:{label:ctx=>` ${ctx.dataset.label}: ₹${ctx.raw.toLocaleString('en-IN')}`} }
+        tooltip:{ mode:'index', intersect:false, backgroundColor:'rgba(10,10,10,0.9)', titleColor:'#F2F2F2', bodyColor:'#C9C9C9', padding:12, cornerRadius:10, titleFont:{family:font,weight:'bold'}, callbacks:{label:ctx=>` ${ctx.dataset.label}: ₹${ctx.raw.toLocaleString('en-IN')}`} }
       },
       interaction:{mode:'index',intersect:false},
       scales:{
@@ -516,14 +516,14 @@ function drawCharts() {
       labels:['Principal Paid','Interest Paid','Remaining'],
       datasets:[{
         data:[totalPrincipal||0, totalInterest||0, remaining.reduce((a,b)=>a+b,0)||1],
-        backgroundColor:['rgba(0,245,160,0.85)','rgba(0,217,245,0.85)','rgba(124,58,237,0.7)'],
-        borderColor:['#00f5a0','#00d9f5','#7c3aed'],
+        backgroundColor:['rgba(0,123,167,0.85)','rgba(54,183,222,0.85)','rgba(255,45,149,0.7)'],
+        borderColor:['#007BA7','#36B7DE','#FF2D95'],
         borderWidth:2, hoverOffset:8, hoverBorderWidth:3,
       }]
     },
     options:{...baseOpts, cutout:'68%',
       plugins:{...baseOpts.plugins,
-        tooltip:{ backgroundColor:'rgba(5,12,26,0.9)', titleColor:'#e8f0fe', bodyColor:'#a0b0d0', padding:12, cornerRadius:10, callbacks:{label:ctx=>` ${ctx.label}: ₹${ctx.raw.toLocaleString('en-IN')}`} }
+        tooltip:{ backgroundColor:'rgba(10,10,10,0.9)', titleColor:'#F2F2F2', bodyColor:'#C9C9C9', padding:12, cornerRadius:10, callbacks:{label:ctx=>` ${ctx.label}: ₹${ctx.raw.toLocaleString('en-IN')}`} }
       }
     }
   });
@@ -531,7 +531,7 @@ function drawCharts() {
   /* RADAR CHART */
   if (radarChart) radarChart.destroy();
   const radarData = loans.map(l=>l.emi);
-  const rColors   = ['rgba(0,245,160,0.7)','rgba(0,217,245,0.7)','rgba(168,85,247,0.7)','rgba(255,159,67,0.7)'];
+  const rColors   = ['rgba(0,123,167,0.7)','rgba(54,183,222,0.7)','rgba(255,45,149,0.7)','rgba(255,127,190,0.7)'];
 
   radarChart = new Chart(document.getElementById('radarChart'), {
     type:'radar',
@@ -540,9 +540,9 @@ function drawCharts() {
       datasets:[{
         label:'Monthly EMI ₹',
         data:radarData,
-        backgroundColor:'rgba(0,245,160,0.12)',
-        borderColor:'#00f5a0', borderWidth:2,
-        pointBackgroundColor:'#00f5a0', pointBorderColor:'#050c1a', pointRadius:5,
+        backgroundColor:'rgba(0,123,167,0.12)',
+        borderColor:'#007BA7', borderWidth:2,
+        pointBackgroundColor:'#007BA7', pointBorderColor:'#0A0A0A', pointRadius:5,
       }]
     },
     options:{...baseOpts,
@@ -579,11 +579,11 @@ function buildLoanCard(l, i, compact=false) {
   const next    = formatNextPayment(nextStr);
 
   const ncMap = {
-    overdue:  {bg:'rgba(255,77,109,0.12)', border:'rgba(255,77,109,0.28)', color:'#ff4d6d', icon:'⚠️'},
-    today:    {bg:'rgba(255,214,10,0.12)', border:'rgba(255,214,10,0.28)', color:'#ffd60a', icon:'🔔'},
-    soon:     {bg:'rgba(255,170,0,0.10)',  border:'rgba(255,170,0,0.25)',  color:'#ffaa00', icon:'⏰'},
-    upcoming: {bg:'rgba(0,245,160,0.07)',  border:'rgba(0,245,160,0.20)',  color:'var(--accent)', icon:'📅'},
-    paid:     {bg:'rgba(0,245,160,0.07)',  border:'rgba(0,245,160,0.20)',  color:'var(--accent)', icon:'✅'},
+    overdue:  {bg:'rgba(255,45,149,0.12)', border:'rgba(255,45,149,0.28)', color:'#FF2D95', icon:'⚠️'},
+    today:    {bg:'rgba(255,170,210,0.12)', border:'rgba(255,170,210,0.28)', color:'#FFAAD2', icon:'🔔'},
+    soon:     {bg:'rgba(255,95,168,0.10)',  border:'rgba(255,95,168,0.25)',  color:'#FF5FA8', icon:'⏰'},
+    upcoming: {bg:'rgba(0,123,167,0.07)',  border:'rgba(0,123,167,0.20)',  color:'var(--accent)', icon:'📅'},
+    paid:     {bg:'rgba(0,123,167,0.07)',  border:'rgba(0,123,167,0.20)',  color:'var(--accent)', icon:'✅'},
   };
   const nc = ncMap[next.status];
 
