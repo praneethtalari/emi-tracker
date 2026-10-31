@@ -1124,3 +1124,121 @@ header, .nav { -webkit-backdrop-filter: blur(20px) saturate(160%); backdrop-filt
   }
   .orb, .particle { display: none; }
 }
+
+/* ═══════════════════════════════════════
+   LIGHT MODE — Porcelain
+   Cool white paper, white cards with soft
+   neutral shadows, deeper brand blue and
+   raspberry so text reads clearly.
+═══════════════════════════════════════ */
+body.light {
+  --void:        #F5F7FA;
+  --deep:        #ECF0F5;
+  --surface:     #FFFFFF;
+  --surface-2:   #F7F9FC;
+  --border:      #E1E6EE;
+  --border-2:    #C9D3E0;
+  --border-hot:  rgba(0,111,150,0.35);
+  --text:        #101828;
+  --text-2:      #5B6578;
+  --plasma:      #006F96;
+  --plasma2:     #2B9BC2;
+  --plasma3:     #D6246E;
+  --fire:        #D9508F;
+  --nova:        #C21D63;
+  --gold:        #B8457A;
+  --danger:      #C21D63;
+  --warn:        #B26A00;
+  --glow-plasma: rgba(0,111,150,0.12);
+  --shadow-1:    0 1px 2px rgba(16,24,40,0.04), 0 4px 16px rgba(16,24,40,0.06);
+  --shadow-2:    0 2px 4px rgba(16,24,40,0.05), 0 16px 40px rgba(16,24,40,0.10);
+}
+body.light .bg-scene::before {
+  background:
+    radial-gradient(ellipse 70% 50% at 8% 0%, rgba(43,155,194,0.10) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 60% at 100% 100%, rgba(214,36,110,0.06) 0%, transparent 60%),
+    #F5F7FA;
+}
+body.light .orb { opacity: 0.45; }
+body.light .particle { display: none; }
+body.light .grid-overlay {
+  background-image:
+    linear-gradient(rgba(16,24,40,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(16,24,40,0.035) 1px, transparent 1px);
+}
+
+/* Bars */
+body.light header { background: rgba(255,255,255,0.86); border-bottom-color: var(--border); }
+body.light header::after { opacity: 0.35; }
+body.light .profile-bar { background: #FFFFFF; border-bottom-color: var(--border); }
+body.light .nav { background: rgba(255,255,255,0.92); border-top-color: var(--border); box-shadow: 0 -4px 20px rgba(16,24,40,0.05); }
+body.light .nav-btn.active .nav-icon { background: #E6F2F7; box-shadow: none; }
+body.light .nav-btn.active .nav-icon i { filter: none; }
+body.light .logo-icon { background: #E6F2F7; border-color: #BFDCE8; box-shadow: none; }
+body.light .pro-badge { color: #FFFFFF; }
+body.light .connect-btn { color: #FFFFFF; box-shadow: 0 4px 14px rgba(0,111,150,0.25); }
+body.light .icon-btn, body.light .date-chip { background: #FFFFFF; box-shadow: var(--shadow-1); }
+
+/* Stat cards: white with a soft tint, no dark shading */
+body.light .stat-card { box-shadow: var(--shadow-1); }
+body.light .stat-card::before { background: none; }
+body.light .stat-card::after { background: linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent); }
+body.light .card-green  { background: linear-gradient(155deg, #E3F1F7 0%, #FFFFFF 75%); border-color: #CFE4EE; }
+body.light .card-blue   { background: linear-gradient(155deg, #E6F5FA 0%, #FFFFFF 75%); border-color: #D2EAF3; }
+body.light .card-purple { background: linear-gradient(155deg, #FCE8F1 0%, #FFFFFF 75%); border-color: #F3D2E1; }
+body.light .card-amber  { background: linear-gradient(155deg, #FDEEF4 0%, #FFFFFF 75%); border-color: #F5DCE7; }
+body.light .stat-card:hover { box-shadow: var(--shadow-2); }
+body.light .stat-glow { opacity: 0.18; }
+body.light .stat-card:hover .stat-glow { opacity: 0.3; }
+body.light .stat-icon-wrap { background: #FFFFFF; border-color: var(--border); box-shadow: 0 1px 2px rgba(16,24,40,0.06); }
+body.light .card-purple .stat-icon-wrap i { color: var(--nova); }
+body.light .stat-label { color: var(--text-2); }
+body.light .stat-value { color: var(--text); }
+
+/* Hero */
+body.light .hero-banner {
+  background: linear-gradient(120deg, #FFFFFF 0%, #EEF7FB 55%, #FDF0F6 100%);
+  border-color: var(--border); box-shadow: var(--shadow-1);
+}
+body.light .hero-banner:hover { box-shadow: var(--shadow-2); border-color: var(--border-2); }
+body.light .hero-bg-anim { opacity: 0.5; }
+body.light .hero-ring { animation: none; filter: none; }
+body.light .hero-ring circle:first-child { stroke: #E6ECF2; }
+
+/* Buttons and inputs */
+body.light .qa-btn { background: #FFFFFF; box-shadow: var(--shadow-1); color: var(--text-2); }
+body.light .qa-btn:hover { box-shadow: var(--shadow-2); }
+body.light .add-loan-card { background: #FFFFFF; box-shadow: var(--shadow-1); }
+body.light input { background: #F7F9FC; border-color: var(--border); box-shadow: none; color: var(--text); }
+body.light input:focus { background: #FFFFFF; border-color: var(--plasma); box-shadow: 0 0 0 3px rgba(0,111,150,0.12); }
+body.light .add-btn, body.light .add-btn-inner, body.light .modal-save-btn { color: #FFFFFF; }
+
+/* Loan cards */
+body.light .loan-card { background: #FFFFFF; border-color: var(--border); box-shadow: var(--shadow-1); }
+body.light .loan-card::before { background: none; }
+body.light .loan-card:hover { border-color: var(--border-2); box-shadow: var(--shadow-2); }
+body.light .loan-emi-badge { background: #E6F2F7; border-color: #CFE4EE; box-shadow: none; }
+body.light .loan-actions button { background: #F7F9FC; }
+body.light .lst { background: #F7F9FC; border-color: #EAEEF4; }
+body.light .lst-val.g, body.light .lst-val.r { text-shadow: none; }
+body.light .lst-val.r { color: var(--nova); }
+body.light .prog-track { background: #E9EEF4; }
+body.light .sch-toggle { background: #F4F9FB; border-color: #D8E9F0; }
+body.light .sch-wrap { background: #FBFCFE; }
+body.light .sch-row.hr { background: #F1F7FA; }
+
+/* Next payment: calm tints instead of heavy pink (colors come from inline styles) */
+body.light .next-pay { box-shadow: none; }
+body.light .next-pay[style*="255,45,149"]  { background: #FFF1F6 !important; border-color: #F5C6D9 !important; }
+body.light .next-pay[style*="255,45,149"] div  { color: #B0175A !important; }
+body.light .next-pay[style*="255,170,210"], body.light .next-pay[style*="255,95,168"] { background: #FFF7EC !important; border-color: #F3D9B0 !important; }
+body.light .next-pay[style*="255,170,210"] div, body.light .next-pay[style*="255,95,168"] div { color: #9A5A00 !important; }
+body.light .next-pay[style*="0,123,167"] { background: #F0F7FA !important; border-color: #CFE4EE !important; }
+
+/* Analytics, modal, misc */
+body.light .chart-card, body.light .chart-summary-item { background: #FFFFFF; box-shadow: var(--shadow-1); }
+body.light .chart-badge { background: #E6F2F7; border-color: #CFE4EE; }
+body.light .modal-box { background: #FFFFFF; border-color: var(--border); box-shadow: 0 30px 80px rgba(16,24,40,0.25); }
+body.light .modal-backdrop { background: rgba(16,24,40,0.35); }
+body.light .completed-badge { background: #F4F9FB; border-color: #BFDCE8; }
+body.light .toast { box-shadow: var(--shadow-2); }
