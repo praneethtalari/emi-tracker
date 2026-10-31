@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Baloo+2:wght@600;700;800&display=swap');
+/* Fonts load from index.html */
 
 /* ═══════════════════════════════════════
    CINEMATIC DESIGN SYSTEM
@@ -66,7 +66,7 @@ body.light {
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  font-family: 'Quicksand', sans-serif;
+  font-family: 'Instrument Sans', system-ui, sans-serif;
   background: var(--void);
   color: var(--text);
   min-height: 100vh;
@@ -187,7 +187,7 @@ header {
   background: rgba(10,10,10,0.75);
   backdrop-filter: blur(40px) saturate(200%);
   border-bottom: 1px solid rgba(0,123,167,0.08);
-  transition: all 0.4s;
+  transition: transform 0.4s var(--ease), opacity 0.4s var(--ease), background-color 0.4s var(--ease), border-color 0.4s var(--ease), color 0.4s var(--ease), box-shadow 0.4s var(--ease);
 }
 body.light header {
   background: rgba(240,244,255,0.82);
@@ -229,7 +229,7 @@ header::after {
 }
 
 .logo-title {
-  font-family: 'Baloo 2', sans-serif;
+  font-family: 'Bricolage Grotesque', 'Instrument Sans', sans-serif;
   font-size: 18px; font-weight: 800; letter-spacing: -0.5px;
   background: linear-gradient(135deg, #fff 0%, rgba(0,123,167,0.9) 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
@@ -244,7 +244,7 @@ body.light .logo-title {
   display: inline-block; padding: 2px 8px; border-radius: 8px; font-size: 9px;
   font-weight: 800; letter-spacing: 2px; margin-left: 6px; vertical-align: middle;
   background: linear-gradient(135deg, var(--plasma), var(--plasma2));
-  color: #0A0A0A; font-family: 'Space Grotesk', sans-serif;
+  color: #0A0A0A; font-family: 'IBM Plex Mono', ui-monospace, monospace;
 }
 
 .header-actions { display: flex; align-items: center; gap: 10px; }
@@ -254,7 +254,7 @@ body.light .logo-title {
   background: var(--surface); border: 1px solid var(--border);
   cursor: pointer; font-size: 15px;
   display: flex; align-items: center; justify-content: center;
-  transition: all 0.25s; backdrop-filter: blur(10px);
+  transition: transform 0.25s var(--ease), opacity 0.25s var(--ease), background-color 0.25s var(--ease), border-color 0.25s var(--ease), color 0.25s var(--ease), box-shadow 0.25s var(--ease); backdrop-filter: blur(10px);
 }
 .icon-btn:hover {
   border-color: var(--plasma); background: rgba(0,123,167,0.08);
@@ -266,9 +266,9 @@ body.light .logo-title {
   display: flex; align-items: center; gap: 8px;
   padding: 8px 18px; border-radius: 14px;
   background: linear-gradient(135deg, var(--plasma), var(--plasma2));
-  color: #0A0A0A; font-family: 'Quicksand', sans-serif;
+  color: #0A0A0A; font-family: 'Instrument Sans', system-ui, sans-serif;
   font-weight: 700; font-size: 13px; border: none; cursor: pointer;
-  transition: all 0.3s; position: relative; overflow: hidden;
+  transition: transform 0.3s var(--ease), opacity 0.3s var(--ease), background-color 0.3s var(--ease), border-color 0.3s var(--ease), color 0.3s var(--ease), box-shadow 0.3s var(--ease); position: relative; overflow: hidden;
   box-shadow: 0 0 30px rgba(0,123,167,0.3);
 }
 .connect-btn::before {
@@ -297,9 +297,9 @@ body.light .logo-title {
 .profile-bar.hidden { display: none !important; }
 .profile-bar img { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--plasma); box-shadow: 0 0 16px var(--glow-plasma); }
 .profile-info > div:first-child { font-size: 13px; font-weight: 700; }
-.profile-info > div:last-child  { font-size: 11px; color: var(--text-2); font-family: 'Space Grotesk', sans-serif; }
-.profile-badge { margin-left: auto; padding: 3px 10px; border-radius: 8px; font-size: 10px; font-weight: 700; background: rgba(0,123,167,0.08); color: var(--plasma); border: 1px solid rgba(0,123,167,0.2); font-family: 'Space Grotesk', sans-serif; letter-spacing: 1px; }
-.signout-btn { font-family: 'Quicksand', sans-serif; font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 10px; background: transparent; border: 1px solid rgba(255,45,149,0.3); color: var(--danger); cursor: pointer; transition: all 0.2s; }
+.profile-info > div:last-child  { font-size: 11px; color: var(--text-2); font-family: 'IBM Plex Mono', ui-monospace, monospace; }
+.profile-badge { margin-left: auto; padding: 3px 10px; border-radius: 8px; font-size: 10px; font-weight: 700; background: rgba(0,123,167,0.08); color: var(--plasma); border: 1px solid rgba(0,123,167,0.2); font-family: 'IBM Plex Mono', ui-monospace, monospace; letter-spacing: 1px; }
+.signout-btn { font-family: 'Instrument Sans', system-ui, sans-serif; font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 10px; background: transparent; border: 1px solid rgba(255,45,149,0.3); color: var(--danger); cursor: pointer; transition: transform 0.2s var(--ease), opacity 0.2s var(--ease), background-color 0.2s var(--ease), border-color 0.2s var(--ease), color 0.2s var(--ease), box-shadow 0.2s var(--ease); }
 .signout-btn:hover { background: rgba(255,45,149,0.1); box-shadow: 0 0 16px rgba(255,45,149,0.15); }
 
 /* ═══════════════════════════════════════
@@ -318,7 +318,7 @@ body.light .logo-title {
 .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
 
 .page-title {
-  font-family: 'Baloo 2', sans-serif;
+  font-family: 'Bricolage Grotesque', 'Instrument Sans', sans-serif;
   font-size: 28px; font-weight: 800; letter-spacing: -0.8px;
   background: linear-gradient(135deg, #fff 0%, rgba(180,220,255,0.7) 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
@@ -335,7 +335,7 @@ body.light .page-title {
   padding: 6px 12px; border-radius: var(--radius-xs);
   background: var(--surface); border: 1px solid var(--border);
   font-size: 10px; color: var(--text-2); font-weight: 600;
-  font-family: 'Space Grotesk', sans-serif; letter-spacing: 0.5px;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace; letter-spacing: 0.5px;
   backdrop-filter: blur(10px);
 }
 
@@ -434,10 +434,10 @@ body.light .page-title {
 .stat-label {
   font-size: 9px; font-weight: 700; letter-spacing: 2px;
   text-transform: uppercase; color: var(--text-2); margin-bottom: 6px;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
 }
 .stat-value {
-  font-size: 20px; font-weight: 700; font-family: 'Space Grotesk', sans-serif;
+  font-size: 20px; font-weight: 700; font-family: 'IBM Plex Mono', ui-monospace, monospace;
   color: #fff; letter-spacing: -0.5px;
   text-shadow: 0 0 20px rgba(255,255,255,0.3);
 }
@@ -469,7 +469,7 @@ body.light .stat-value { color: #0A0A0A; text-shadow: none; }
   margin-bottom: 12px; overflow: hidden; position: relative;
   backdrop-filter: blur(30px);
   animation: cardDrop 0.7s 0.3s var(--ease) both;
-  transition: all 0.4s;
+  transition: transform 0.4s var(--ease), opacity 0.4s var(--ease), background-color 0.4s var(--ease), border-color 0.4s var(--ease), color 0.4s var(--ease), box-shadow 0.4s var(--ease);
   box-shadow:
     0 0 0 1px rgba(0,123,167,0.05),
     0 8px 40px rgba(0,0,0,0.5),
@@ -493,10 +493,10 @@ body.light .stat-value { color: #0A0A0A; text-shadow: none; }
 .hero-label {
   font-size: 9px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
   color: var(--plasma); margin-bottom: 8px;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
 }
 .hero-value {
-  font-size: 36px; font-weight: 800; font-family: 'Space Grotesk', sans-serif;
+  font-size: 36px; font-weight: 800; font-family: 'IBM Plex Mono', ui-monospace, monospace;
   color: #fff; letter-spacing: -1px;
   text-shadow: 0 0 40px rgba(0,123,167,0.3);
 }
@@ -510,7 +510,7 @@ body.light .hero-value { color: #0A0A0A; text-shadow: none; }
   animation: ringPulse 3s ease-in-out infinite;
 }
 @keyframes ringPulse { 0%,100%{filter:drop-shadow(0 0 20px rgba(0,123,167,0.3))} 50%{filter:drop-shadow(0 0 40px rgba(0,123,167,0.6))} }
-.ring-pct { position: absolute; font-size: 14px; font-weight: 700; font-family: 'Space Grotesk', sans-serif; color: var(--plasma); }
+.ring-pct { position: absolute; font-size: 14px; font-weight: 700; font-family: 'IBM Plex Mono', ui-monospace, monospace; color: var(--plasma); }
 .hero-ring-label { font-size: 9px; color: var(--text-2); font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
 
 /* ═══════════════════════════════════════
@@ -522,8 +522,8 @@ body.light .hero-value { color: #0A0A0A; text-shadow: none; }
   padding: 14px 8px; border-radius: var(--radius-sm);
   background: var(--surface); border: 1px solid var(--border);
   color: var(--text-2); font-size: 10px; font-weight: 700;
-  font-family: 'Quicksand', sans-serif; letter-spacing: 0.5px; text-transform: uppercase;
-  cursor: pointer; transition: all 0.3s var(--ease);
+  font-family: 'Instrument Sans', system-ui, sans-serif; letter-spacing: 0.5px; text-transform: uppercase;
+  cursor: pointer; transition: transform 0.3s var(--ease), opacity 0.3s var(--ease), background-color 0.3s var(--ease), border-color 0.3s var(--ease), color 0.3s var(--ease), box-shadow 0.3s var(--ease);
   backdrop-filter: blur(20px); position: relative; overflow: hidden;
 }
 .qa-btn::before {
@@ -549,7 +549,7 @@ body.light .hero-value { color: #0A0A0A; text-shadow: none; }
 .section-title {
   font-size: 10px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
   color: var(--plasma); white-space: nowrap;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
 }
 .section-line {
   flex: 1; height: 1px;
@@ -584,7 +584,7 @@ body.light .hero-value { color: #0A0A0A; text-shadow: none; }
   box-shadow: 0 0 20px rgba(0,123,167,0.1);
 }
 .add-loan-icon i { width: 18px; height: 18px; color: var(--plasma); }
-.add-loan-title { font-size: 16px; font-weight: 700; font-family: 'Baloo 2', sans-serif; }
+.add-loan-title { font-size: 16px; font-weight: 700; font-family: 'Bricolage Grotesque', 'Instrument Sans', sans-serif; }
 
 /* ═══════════════════════════════════════
    FORM
@@ -594,14 +594,14 @@ body.light .hero-value { color: #0A0A0A; text-shadow: none; }
 .input-group.full-width { grid-column: 1/-1; }
 .input-group label {
   font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
-  color: var(--plasma); font-family: 'Space Grotesk', sans-serif;
+  color: var(--plasma); font-family: 'IBM Plex Mono', ui-monospace, monospace;
 }
 
 input {
   width: 100%; padding: 12px 14px; border-radius: var(--radius-sm);
   background: rgba(255,255,255,0.03); border: 1px solid var(--border);
-  color: var(--text); font-size: 14px; font-family: 'Quicksand', sans-serif;
-  outline: none; transition: all 0.3s var(--ease);
+  color: var(--text); font-size: 14px; font-family: 'Instrument Sans', system-ui, sans-serif;
+  outline: none; transition: transform 0.3s var(--ease), opacity 0.3s var(--ease), background-color 0.3s var(--ease), border-color 0.3s var(--ease), color 0.3s var(--ease), box-shadow 0.3s var(--ease);
   box-shadow: inset 0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(0,0,0,0.2);
 }
 body.light input { background: rgba(255,255,255,0.8); box-shadow: inset 0 2px 4px rgba(80,100,200,0.06); }
@@ -616,7 +616,7 @@ input:focus {
   transform: translateY(-1px);
 }
 input[readonly] {
-  color: var(--plasma); font-family: 'Space Grotesk', sans-serif; font-weight: 600;
+  color: var(--plasma); font-family: 'IBM Plex Mono', ui-monospace, monospace; font-weight: 600;
   border-color: rgba(0,123,167,0.2); background: rgba(0,123,167,0.04);
   box-shadow: 0 0 20px rgba(0,123,167,0.05);
 }
@@ -625,13 +625,13 @@ input[readonly] {
   width: 100%; margin-top: 18px; padding: 0;
   border-radius: var(--radius-sm); border: none; cursor: pointer;
   background: linear-gradient(135deg, var(--plasma), var(--plasma2));
-  position: relative; overflow: hidden; transition: all 0.3s;
+  position: relative; overflow: hidden; transition: transform 0.3s var(--ease), opacity 0.3s var(--ease), background-color 0.3s var(--ease), border-color 0.3s var(--ease), color 0.3s var(--ease), box-shadow 0.3s var(--ease);
   box-shadow: 0 4px 30px rgba(0,123,167,0.25);
 }
 .add-btn-inner {
   display: flex; align-items: center; justify-content: center; gap: 8px;
   padding: 15px; font-size: 14px; font-weight: 700; letter-spacing: 0.5px;
-  font-family: 'Quicksand', sans-serif; color: #0A0A0A;
+  font-family: 'Instrument Sans', system-ui, sans-serif; color: #0A0A0A;
   position: relative; z-index: 1;
 }
 .add-btn::before {
@@ -642,7 +642,7 @@ input[readonly] {
 .add-btn:hover::before { opacity: 1; }
 .add-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,123,167,0.4), 0 0 80px rgba(0,123,167,0.1); }
 .add-btn:active { transform: translateY(0); }
-button { font-family: 'Quicksand', sans-serif; font-weight: 600; border: none; cursor: pointer; transition: all 0.2s; }
+button { font-family: 'Instrument Sans', system-ui, sans-serif; font-weight: 600; border: none; cursor: pointer; transition: transform 0.2s var(--ease), opacity 0.2s var(--ease), background-color 0.2s var(--ease), border-color 0.2s var(--ease), color 0.2s var(--ease), box-shadow 0.2s var(--ease); }
 
 /* ═══════════════════════════════════════
    LOAN CARDS — Holographic
@@ -652,7 +652,7 @@ button { font-family: 'Quicksand', sans-serif; font-weight: 600; border: none; c
   border-radius: var(--radius); padding: 20px; margin-bottom: 12px;
   position: relative; overflow: hidden;
   backdrop-filter: blur(30px);
-  transition: all 0.4s var(--ease);
+  transition: transform 0.4s var(--ease), opacity 0.4s var(--ease), background-color 0.4s var(--ease), border-color 0.4s var(--ease), color 0.4s var(--ease), box-shadow 0.4s var(--ease);
   animation: cardDrop 0.6s var(--ease) both;
   box-shadow:
     0 4px 20px rgba(0,0,0,0.4),
@@ -681,13 +681,13 @@ button { font-family: 'Quicksand', sans-serif; font-weight: 600; border: none; c
 }
 
 .loan-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
-.loan-name-wrap .loan-name { font-size: 17px; font-weight: 700; margin-bottom: 5px; font-family: 'Baloo 2', sans-serif; }
+.loan-name-wrap .loan-name { font-size: 17px; font-weight: 700; margin-bottom: 5px; font-family: 'Bricolage Grotesque', 'Instrument Sans', sans-serif; }
 .loan-emi-badge {
   display: inline-flex; align-items: center; gap: 5px;
   padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700;
   background: rgba(0,123,167,0.08); color: var(--plasma);
   border: 1px solid rgba(0,123,167,0.2);
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
   box-shadow: 0 0 16px rgba(0,123,167,0.08);
 }
 .loan-actions { display: flex; gap: 8px; }
@@ -695,7 +695,7 @@ button { font-family: 'Quicksand', sans-serif; font-weight: 600; border: none; c
   width: 34px; height: 34px; border-radius: 14px;
   background: var(--surface-2); border: 1px solid var(--border);
   color: var(--text-2); display: flex; align-items: center; justify-content: center;
-  transition: all 0.25s;
+  transition: transform 0.25s var(--ease), opacity 0.25s var(--ease), background-color 0.25s var(--ease), border-color 0.25s var(--ease), color 0.25s var(--ease), box-shadow 0.25s var(--ease);
 }
 .loan-actions button:hover { border-color: rgba(0,123,167,0.3); color: var(--plasma); background: rgba(0,123,167,0.06); box-shadow: 0 0 16px rgba(0,123,167,0.1); }
 .loan-actions button.del-btn:hover { border-color: var(--danger); color: var(--danger); background: rgba(255,45,149,0.08); box-shadow: 0 0 16px rgba(255,45,149,0.12); }
@@ -706,12 +706,12 @@ button { font-family: 'Quicksand', sans-serif; font-weight: 600; border: none; c
 .lst {
   background: rgba(255,255,255,0.025); border-radius: var(--radius-sm); padding: 10px 8px;
   border: 1px solid var(--border); text-align: center;
-  transition: all 0.2s;
+  transition: transform 0.2s var(--ease), opacity 0.2s var(--ease), background-color 0.2s var(--ease), border-color 0.2s var(--ease), color 0.2s var(--ease), box-shadow 0.2s var(--ease);
 }
 .lst:hover { border-color: var(--border-2); background: rgba(255,255,255,0.04); }
 body.light .lst { background: rgba(255,255,255,0.6); }
-.lst-label { font-size: 8px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text-2); margin-bottom: 5px; font-family: 'Space Grotesk', sans-serif; }
-.lst-val { font-size: 12px; font-weight: 700; font-family: 'Space Grotesk', sans-serif; color: var(--text); }
+.lst-label { font-size: 8px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text-2); margin-bottom: 5px; font-family: 'IBM Plex Mono', ui-monospace, monospace; }
+.lst-val { font-size: 12px; font-weight: 700; font-family: 'IBM Plex Mono', ui-monospace, monospace; color: var(--text); }
 .lst-val.g { color: var(--plasma); text-shadow: 0 0 12px rgba(0,123,167,0.3); }
 .lst-val.r { color: var(--danger); text-shadow: 0 0 12px rgba(255,45,149,0.25); }
 
@@ -719,10 +719,10 @@ body.light .lst { background: rgba(255,255,255,0.6); }
 .next-pay {
   display: flex; align-items: center; justify-content: space-between;
   padding: 12px 14px; border-radius: var(--radius-sm); margin-bottom: 14px;
-  transition: all 0.2s;
+  transition: transform 0.2s var(--ease), opacity 0.2s var(--ease), background-color 0.2s var(--ease), border-color 0.2s var(--ease), color 0.2s var(--ease), box-shadow 0.2s var(--ease);
 }
-.next-pay-tag { font-size: 8px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; opacity: 0.7; font-family: 'Space Grotesk', sans-serif; }
-.next-pay-date { font-size: 13px; font-weight: 700; font-family: 'Space Grotesk', sans-serif; margin-top: 3px; }
+.next-pay-tag { font-size: 8px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; opacity: 0.7; font-family: 'IBM Plex Mono', ui-monospace, monospace; }
+.next-pay-date { font-size: 13px; font-weight: 700; font-family: 'IBM Plex Mono', ui-monospace, monospace; margin-top: 3px; }
 .next-pay-end { font-size: 10px; opacity: 0.65; margin-top: 2px; }
 .next-pay-icon { font-size: 24px; animation: iconBounce 2s ease-in-out infinite; }
 @keyframes iconBounce { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }
@@ -730,8 +730,8 @@ body.light .lst { background: rgba(255,255,255,0.6); }
 /* Progress */
 .loan-prog-wrap { margin-bottom: 14px; }
 .loan-prog-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-.loan-prog-label { font-size: 11px; color: var(--text-2); font-family: 'Space Grotesk', sans-serif; }
-.loan-prog-pct { font-size: 12px; font-weight: 700; font-family: 'Space Grotesk', sans-serif; color: var(--plasma); }
+.loan-prog-label { font-size: 11px; color: var(--text-2); font-family: 'IBM Plex Mono', ui-monospace, monospace; }
+.loan-prog-pct { font-size: 12px; font-weight: 700; font-family: 'IBM Plex Mono', ui-monospace, monospace; color: var(--plasma); }
 .prog-track { height: 5px; border-radius: 16px; background: rgba(255,255,255,0.05); overflow: hidden; }
 body.light .prog-track { background: rgba(0,0,0,0.07); }
 .prog-fill {
@@ -755,9 +755,9 @@ body.light .prog-track { background: rgba(0,0,0,0.07); }
   width: 100%; padding: 10px; border-radius: var(--radius-sm);
   background: rgba(0,123,167,0.03); border: 1px solid rgba(0,123,167,0.1);
   color: var(--plasma); font-size: 11px; font-weight: 600;
-  font-family: 'Space Grotesk', sans-serif; cursor: pointer;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace; cursor: pointer;
   display: flex; align-items: center; justify-content: center; gap: 6px;
-  transition: all 0.25s; letter-spacing: 0.5px;
+  transition: transform 0.25s var(--ease), opacity 0.25s var(--ease), background-color 0.25s var(--ease), border-color 0.25s var(--ease), color 0.25s var(--ease), box-shadow 0.25s var(--ease); letter-spacing: 0.5px;
 }
 .sch-toggle:hover { background: rgba(0,123,167,0.07); border-color: rgba(0,123,167,0.25); box-shadow: 0 0 20px rgba(0,123,167,0.06); }
 
@@ -775,7 +775,7 @@ body.light .sch-wrap { background: rgba(255,255,255,0.5); }
 
 .sch-row {
   display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr 38px;
-  padding: 9px 12px; font-size: 11px; font-family: 'Space Grotesk', sans-serif;
+  padding: 9px 12px; font-size: 11px; font-family: 'IBM Plex Mono', ui-monospace, monospace;
   border-bottom: 1px solid rgba(255,255,255,0.03);
   align-items: center; color: var(--text);
 }
@@ -790,7 +790,7 @@ body.light .sch-row { border-bottom-color: rgba(0,0,0,0.04); }
   border: 1px solid var(--border); background: transparent;
   color: var(--text-2); font-size: 11px; padding: 0;
   display: flex; align-items: center; justify-content: center;
-  transition: all 0.2s; cursor: pointer;
+  transition: transform 0.2s var(--ease), opacity 0.2s var(--ease), background-color 0.2s var(--ease), border-color 0.2s var(--ease), color 0.2s var(--ease), box-shadow 0.2s var(--ease); cursor: pointer;
 }
 .pay-btn:hover { border-color: var(--plasma); color: var(--plasma); box-shadow: 0 0 12px rgba(0,123,167,0.2); }
 .sch-row.paid .pay-btn { border-color: rgba(0,123,167,0.3); color: var(--plasma); background: rgba(0,123,167,0.08); }
@@ -802,11 +802,11 @@ body.light .sch-row { border-bottom-color: rgba(0,0,0,0.04); }
 .chart-summary-item {
   background: var(--surface); border: 1px solid var(--border);
   border-radius: var(--radius-sm); padding: 14px 12px; text-align: center;
-  backdrop-filter: blur(20px); transition: all 0.3s;
+  backdrop-filter: blur(20px); transition: transform 0.3s var(--ease), opacity 0.3s var(--ease), background-color 0.3s var(--ease), border-color 0.3s var(--ease), color 0.3s var(--ease), box-shadow 0.3s var(--ease);
 }
 .chart-summary-item:hover { border-color: var(--border-2); transform: translateY(-2px); }
-.cs-label { font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text-2); margin-bottom: 7px; font-family: 'Space Grotesk', sans-serif; }
-.cs-value { font-size: 16px; font-weight: 700; font-family: 'Space Grotesk', sans-serif; color: var(--text); }
+.cs-label { font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text-2); margin-bottom: 7px; font-family: 'IBM Plex Mono', ui-monospace, monospace; }
+.cs-value { font-size: 16px; font-weight: 700; font-family: 'IBM Plex Mono', ui-monospace, monospace; color: var(--text); }
 .cs-value.red { color: var(--danger); }
 
 .chart-card {
@@ -815,20 +815,20 @@ body.light .sch-row { border-bottom-color: rgba(0,0,0,0.04); }
   backdrop-filter: blur(30px);
   box-shadow: 0 4px 30px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04);
   animation: cardDrop 0.6s var(--ease) both;
-  transition: all 0.3s;
+  transition: transform 0.3s var(--ease), opacity 0.3s var(--ease), background-color 0.3s var(--ease), border-color 0.3s var(--ease), color 0.3s var(--ease), box-shadow 0.3s var(--ease);
 }
 .chart-card:hover { border-color: var(--border-2); transform: translateY(-3px); box-shadow: 0 16px 50px rgba(0,0,0,0.4); }
 body.light .chart-card { box-shadow: 0 4px 20px rgba(80,100,200,0.08); }
 .chart-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .chart-card.half { margin-bottom: 0; }
 .chart-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; }
-.chart-title { font-size: 14px; font-weight: 700; margin-bottom: 3px; font-family: 'Baloo 2', sans-serif; }
+.chart-title { font-size: 14px; font-weight: 700; margin-bottom: 3px; font-family: 'Bricolage Grotesque', 'Instrument Sans', sans-serif; }
 .chart-desc  { font-size: 11px; color: var(--text-2); }
 .chart-badge {
   padding: 3px 10px; border-radius: 8px; font-size: 9px; font-weight: 700;
   background: rgba(0,123,167,0.08); color: var(--plasma);
   border: 1px solid rgba(0,123,167,0.2); white-space: nowrap;
-  font-family: 'Space Grotesk', sans-serif; letter-spacing: 1px;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace; letter-spacing: 1px;
 }
 canvas { max-width: 100%; }
 
@@ -860,15 +860,15 @@ body.light .nav { background: rgba(240,244,255,0.9); border-top-color: rgba(0,12
   background: transparent; border: none; color: var(--text-2);
   font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
   cursor: pointer; padding: 8px 16px; border-radius: var(--radius-sm);
-  transition: all 0.3s var(--ease);
-  font-family: 'Space Grotesk', sans-serif;
+  transition: transform 0.3s var(--ease), opacity 0.3s var(--ease), background-color 0.3s var(--ease), border-color 0.3s var(--ease), color 0.3s var(--ease), box-shadow 0.3s var(--ease);
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
 }
 .nav-icon {
   width: 40px; height: 40px; border-radius: 18px;
   display: flex; align-items: center; justify-content: center;
-  transition: all 0.3s var(--ease); position: relative;
+  transition: transform 0.3s var(--ease), opacity 0.3s var(--ease), background-color 0.3s var(--ease), border-color 0.3s var(--ease), color 0.3s var(--ease), box-shadow 0.3s var(--ease); position: relative;
 }
-.nav-icon i { width: 20px; height: 20px; transition: all 0.3s; }
+.nav-icon i { width: 20px; height: 20px; transition: transform 0.3s var(--ease), opacity 0.3s var(--ease), background-color 0.3s var(--ease), border-color 0.3s var(--ease), color 0.3s var(--ease), box-shadow 0.3s var(--ease); }
 
 .nav-btn:hover .nav-icon { background: rgba(0,123,167,0.08); }
 .nav-btn:hover { color: var(--plasma); }
@@ -898,7 +898,7 @@ body.light .nav { background: rgba(240,244,255,0.9); border-top-color: rgba(0,12
 }
 .empty-icon { font-size: 52px; margin-bottom: 16px; opacity: 0.25; display: block; animation: emptyFloat 4s ease-in-out infinite; }
 @keyframes emptyFloat { 0%,100%{transform:translateY(0) rotate(0deg)} 50%{transform:translateY(-12px) rotate(3deg)} }
-.empty-state h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; font-family: 'Baloo 2', sans-serif; }
+.empty-state h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; font-family: 'Bricolage Grotesque', 'Instrument Sans', sans-serif; }
 .empty-state p  { font-size: 13px; color: var(--text-2); }
 
 /* ═══════════════════════════════════════
@@ -907,7 +907,7 @@ body.light .nav { background: rgba(240,244,255,0.9); border-top-color: rgba(0,12
 .toast {
   position: fixed; bottom: calc(var(--nav-h) + 16px); left: 50%; transform: translateX(-50%);
   padding: 12px 24px; border-radius: 14px; font-size: 13px; font-weight: 700;
-  font-family: 'Space Grotesk', sans-serif; letter-spacing: 0.5px;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace; letter-spacing: 0.5px;
   backdrop-filter: blur(30px); z-index: 9999; white-space: nowrap;
   animation: toastIn 0.4s var(--ease-back);
 }
@@ -970,12 +970,12 @@ body.light .modal-box {
   box-shadow: 0 0 24px rgba(0,123,167,0.12);
 }
 .modal-icon i { width: 18px; height: 18px; color: var(--plasma); }
-.modal-title { font-size: 20px; font-weight: 800; font-family: 'Baloo 2', sans-serif; }
+.modal-title { font-size: 20px; font-weight: 800; font-family: 'Bricolage Grotesque', 'Instrument Sans', sans-serif; }
 .modal-close {
   width: 36px; height: 36px; border-radius: 14px;
   background: rgba(255,255,255,0.05); border: 1px solid var(--border);
   color: var(--text-2); display: flex; align-items: center; justify-content: center;
-  cursor: pointer; transition: all 0.25s;
+  cursor: pointer; transition: transform 0.25s var(--ease), opacity 0.25s var(--ease), background-color 0.25s var(--ease), border-color 0.25s var(--ease), color 0.25s var(--ease), box-shadow 0.25s var(--ease);
 }
 .modal-close:hover { background: rgba(255,45,149,0.1); border-color: var(--danger); color: var(--danger); transform: rotate(90deg); box-shadow: 0 0 16px rgba(255,45,149,0.15); }
 .modal-close i { width: 16px; height: 16px; }
@@ -985,7 +985,7 @@ body.light .modal-box {
   flex: 1; padding: 13px; border-radius: var(--radius-sm);
   background: rgba(255,255,255,0.04); border: 1px solid var(--border);
   color: var(--text-2); font-size: 13px; font-weight: 700;
-  font-family: 'Quicksand', sans-serif; cursor: pointer; transition: all 0.25s;
+  font-family: 'Instrument Sans', system-ui, sans-serif; cursor: pointer; transition: transform 0.25s var(--ease), opacity 0.25s var(--ease), background-color 0.25s var(--ease), border-color 0.25s var(--ease), color 0.25s var(--ease), box-shadow 0.25s var(--ease);
   letter-spacing: 0.5px;
 }
 .modal-cancel-btn:hover { background: rgba(255,45,149,0.07); border-color: rgba(255,45,149,0.3); color: var(--danger); transform: translateY(-1px); }
@@ -994,7 +994,7 @@ body.light .modal-box {
   flex: 2; padding: 13px; border-radius: var(--radius-sm);
   background: linear-gradient(135deg, var(--plasma), var(--plasma2));
   border: none; color: #0A0A0A; font-size: 13px; font-weight: 700;
-  font-family: 'Quicksand', sans-serif; cursor: pointer; transition: all 0.3s;
+  font-family: 'Instrument Sans', system-ui, sans-serif; cursor: pointer; transition: transform 0.3s var(--ease), opacity 0.3s var(--ease), background-color 0.3s var(--ease), border-color 0.3s var(--ease), color 0.3s var(--ease), box-shadow 0.3s var(--ease);
   display: flex; align-items: center; justify-content: center; gap: 8px;
   box-shadow: 0 4px 24px rgba(0,123,167,0.25); letter-spacing: 0.5px;
   position: relative; overflow: hidden;
@@ -1014,16 +1014,16 @@ body.light .modal-box {
   border: 1px dashed rgba(0,123,167,0.2);
   font-size: 12px; color: var(--text-2);
   animation: cardDrop 0.5s var(--ease) both;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
 }
 body.light .completed-badge { background: rgba(0,123,167,0.05); border-color: rgba(0,123,167,0.25); }
 .completed-badge-icon { font-size: 18px; }
 .completed-badge strong { color: var(--plasma); }
 .completed-link {
   background: none; border: none; color: var(--plasma);
-  font-size: 12px; font-weight: 700; font-family: 'Space Grotesk', sans-serif;
+  font-size: 12px; font-weight: 700; font-family: 'IBM Plex Mono', ui-monospace, monospace;
   cursor: pointer; padding: 0; text-decoration: underline;
-  text-underline-offset: 3px; transition: all 0.2s;
+  text-underline-offset: 3px; transition: transform 0.2s var(--ease), opacity 0.2s var(--ease), background-color 0.2s var(--ease), border-color 0.2s var(--ease), color 0.2s var(--ease), box-shadow 0.2s var(--ease);
 }
 .completed-link:hover { opacity: 0.7; text-shadow: 0 0 12px rgba(0,123,167,0.4); }
 
@@ -1037,6 +1037,90 @@ body.light .completed-badge { background: rgba(0,123,167,0.05); border-color: rg
   color: var(--plasma); background: rgba(0,123,167,0.08);
   border: 1px solid rgba(0,123,167,0.2);
   padding: 3px 10px; border-radius: 8px;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
   pointer-events: none;
+}
+
+/* ═══════════════════════════════════════
+   SMOOTH MOTION LAYER
+   Motion uses only transform and opacity,
+   entrances play once, and no blur sits
+   behind cards while the orbs drift.
+═══════════════════════════════════════ */
+:root {
+  --ease:      cubic-bezier(0.22,1,0.36,1);
+  --ease-back: cubic-bezier(0.34,1.4,0.64,1);
+}
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Instrument Sans', system-ui, sans-serif;
+  text-rendering: optimizeLegibility;
+  -moz-osx-font-smoothing: grayscale;
+}
+.page-title, .logo-title, .loan-name, .modal-title, .chart-title, .add-loan-title, .empty-state h3 {
+  letter-spacing: -0.02em; font-optical-sizing: auto;
+}
+.stat-value, .hero-value, .lst-val, .cs-value, .sch-row, .next-pay-date, .loan-emi-badge, .ring-pct, .loan-prog-pct {
+  font-variant-numeric: tabular-nums;
+}
+.hero-value { letter-spacing: -0.03em; }
+
+/* Entrances: transform + opacity only (blur in keyframes was the main stutter) */
+@keyframes cardDrop { from { opacity: 0; transform: translate3d(0,18px,0) scale(0.985); } to { opacity: 1; transform: none; } }
+@keyframes cinemaIn { from { opacity: 0; transform: translate3d(0,12px,0); } to { opacity: 1; transform: none; } }
+@keyframes fadeUp   { from { opacity: 0; transform: translate3d(0,6px,0); }  to { opacity: 1; transform: none; } }
+@keyframes modalIn  { from { opacity: 0; transform: translate3d(0,16px,0) scale(0.97); } to { opacity: 1; transform: none; } }
+.screen.active { animation: cinemaIn 0.5s var(--ease) both; }
+.stat-card, .hero-banner, .add-loan-card, .loan-card, .chart-card, .empty-state {
+  animation-duration: 0.65s; animation-timing-function: var(--ease); animation-fill-mode: backwards;
+}
+
+/* After first paint, updates never replay entrances; only a newly added loan animates in */
+body.settled .loan-card, body.settled .stat-card, body.settled .hero-banner,
+body.settled .add-loan-card, body.settled .empty-state, body.settled .completed-badge { animation: none; }
+body.settled .loan-card.is-new { animation: cardDrop 0.6s var(--ease) backwards; }
+
+/* Glows that no longer repaint every frame */
+@keyframes logoPulse { from, to { opacity: 1; } }
+@keyframes ringPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.88; } }
+.loan-card-accent, .prog-fill { animation: none; }
+.particle { will-change: transform, opacity; }
+.orb { animation-timing-function: cubic-bezier(0.45,0,0.55,1); }
+.stat-glow { transition: opacity 0.4s var(--ease); }
+
+/* Blur only on the bars that float over content */
+.loan-card, .stat-card, .chart-card, .chart-summary-item, .date-chip, .icon-btn,
+.profile-bar, .add-loan-card, .hero-banner { -webkit-backdrop-filter: none; backdrop-filter: none; }
+header, .nav { -webkit-backdrop-filter: blur(20px) saturate(160%); backdrop-filter: blur(20px) saturate(160%); }
+
+/* Hover and press feel */
+.loan-card { transition: transform 0.45s var(--ease), box-shadow 0.45s var(--ease), border-color 0.3s var(--ease); }
+.loan-card:hover { transform: translate3d(0,-4px,0); }
+.stat-card { will-change: transform; }
+.qa-btn:active, .add-btn:active, .pay-btn:active, .sch-toggle:active, .loan-actions button:active,
+.modal-save-btn:active, .modal-cancel-btn:active, .connect-btn:active, .signout-btn:active, .icon-btn:active {
+  transform: scale(0.96); transition-duration: 0.08s;
+}
+.nav-btn:active .nav-icon { transform: scale(0.9); transition-duration: 0.08s; }
+
+/* Schedules slide open and closed instead of popping */
+.sch-wrap {
+  display: block; max-height: 0; opacity: 0; margin-top: 0; overflow: hidden;
+  border-width: 0; border-color: transparent;
+  transition: max-height 0.45s var(--ease), opacity 0.3s var(--ease), margin-top 0.3s var(--ease), border-color 0.3s;
+}
+.sch-wrap.open {
+  max-height: 260px; opacity: 1; margin-top: 10px; overflow-y: auto;
+  border-width: 1px; border-color: var(--border); animation: none;
+}
+.prog-fill { transition: width 0.9s var(--ease); }
+.sch-row { transition: opacity 0.3s var(--ease), background-color 0.2s; }
+.toast { transition: opacity 0.3s var(--ease), transform 0.3s var(--ease); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important; animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important; scroll-behavior: auto !important;
+  }
+  .orb, .particle { display: none; }
 }

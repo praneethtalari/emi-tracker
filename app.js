@@ -21,7 +21,7 @@ function initParticles() {
   const container = document.getElementById('particles');
   if (!container) return;
   const colors = ['#007BA7','#36B7DE','#FF2D95','#FF7FBE','#FF2D95','#FFAAD2'];
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 18; i++) {
     const p = document.createElement('div');
     p.className = 'particle';
     const size = Math.random() * 2.5 + 0.5;
@@ -66,27 +66,33 @@ function initParticles() {
 /* ═══════════════════════════════════════
    3D TILT EFFECT
 ═══════════════════════════════════════ */
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let tiltReady = false;
 function initTilt() {
-  document.querySelectorAll('[data-tilt]').forEach(el => {
-    el.addEventListener('mousemove', e => {
-      const r = el.getBoundingClientRect();
-      const x = (e.clientX - r.left) / r.width  - 0.5;
-      const y = (e.clientY - r.top)  / r.height - 0.5;
-      el.style.transform = `perspective(800px) rotateX(${-y*12}deg) rotateY(${x*12}deg) translateY(-6px) scale(1.02)`;
-      el.style.transition = 'transform 0.1s ease';
-      // Dynamic highlight follow
-      const glow = el.querySelector('.stat-glow');
-      if (glow) {
-        glow.style.transform = `translate(${x*40}px, ${y*40}px)`;
-      }
-    });
-    el.addEventListener('mouseleave', () => {
-      el.style.transform = '';
-      el.style.transition = 'transform 0.6s cubic-bezier(0.16,1,0.3,1)';
-      const glow = el.querySelector('.stat-glow');
-      if (glow) glow.style.transform = '';
-    });
-  });
+  // One delegated listener, eased every frame — no stacking listeners, no jitter.
+  if (tiltReady || reduceMotion || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+  tiltReady = true;
+  const state = new Map();
+  const frame = (el, s) => {
+    s.cx += (s.tx - s.cx) * 0.12; s.cy += (s.ty - s.cy) * 0.12; s.cl += (s.tl - s.cl) * 0.12;
+    el.style.transform = `perspective(900px) rotateX(${(-s.cy * 8).toFixed(2)}deg) rotateY(${(s.cx * 8).toFixed(2)}deg) translate3d(0,${(-6 * s.cl).toFixed(2)}px,0) scale(${(1 + 0.015 * s.cl).toFixed(4)})`;
+    const glow = el.querySelector('.stat-glow');
+    if (glow) glow.style.transform = `translate3d(${(s.cx * 40).toFixed(1)}px,${(s.cy * 40).toFixed(1)}px,0)`;
+    if (Math.abs(s.tx - s.cx) + Math.abs(s.ty - s.cy) + Math.abs(s.tl - s.cl) > 0.002) s.raf = requestAnimationFrame(() => frame(el, s));
+    else { s.raf = 0; if (!s.tl) { el.style.transform = ''; if (glow) glow.style.transform = ''; } }
+  };
+  const kick = (el, s) => { if (!s.raf) s.raf = requestAnimationFrame(() => frame(el, s)); };
+  document.addEventListener('pointermove', e => {
+    const el = e.target.closest ? e.target.closest('[data-tilt]') : null;
+    state.forEach((s, k) => { if (k !== el && s.tl) { s.tx = s.ty = s.tl = 0; kick(k, s); } });
+    if (!el || !el.isConnected) return;
+    let s = state.get(el);
+    if (!s) { s = { tx: 0, ty: 0, cx: 0, cy: 0, tl: 0, cl: 0, raf: 0 }; state.set(el, s); el.style.transition = 'box-shadow 0.4s var(--ease), border-color 0.3s var(--ease)'; }
+    const r = el.getBoundingClientRect();
+    s.tx = (e.clientX - r.left) / r.width - 0.5; s.ty = (e.clientY - r.top) / r.height - 0.5; s.tl = 1;
+    kick(el, s);
+  }, { passive: true });
+  document.documentElement.addEventListener('pointerleave', () => state.forEach((s, k) => { s.tx = s.ty = s.tl = 0; kick(k, s); }));
 }
 
 /* ═══════════════════════════════════════
@@ -182,6 +188,7 @@ window.addEventListener('DOMContentLoaded', () => {
   );
   initParticles();
   setTimeout(initTilt, 500);
+  setTimeout(() => document.body.classList.add('settled'), 1500);
 });
 
 /* ═══════════════════════════════════════
@@ -354,8 +361,13 @@ async function saveEditLoan() {
   render();
 }
 
+const openSch = new Set();
 function toggleSchedule(id) {
-  document.getElementById('sch-'+id)?.classList.toggle('open');
+  const el = document.getElementById('sch-'+id);
+  if (!el) return;
+  const open = !el.classList.contains('open');
+  el.classList.toggle('open', open);
+  if (open) openSch.add(id); else openSch.delete(id);
 }
 
 /* ═══════════════════════════════════════
@@ -416,7 +428,7 @@ function showToast(msg, type='success') {
   const t=document.createElement('div');
   t.className=`toast ${type}`; t.textContent=msg;
   document.body.appendChild(t);
-  setTimeout(()=>{ t.style.opacity='0'; t.style.transition='opacity 0.3s'; setTimeout(()=>t.remove(),300); },2500);
+  setTimeout(()=>{ t.style.opacity='0'; t.style.transform='translateX(-50%) translateY(10px) scale(0.96)'; setTimeout(()=>t.remove(),320); },2500);
 }
 
 /* ═══════════════════════════════════════
@@ -434,7 +446,7 @@ function getChartColors() {
 function drawCharts() {
   if (!loans.length) return;
   const C = getChartColors();
-  const font = "'Space Grotesk',sans-serif";
+  const font = "'IBM Plex Mono',ui-monospace,monospace";
 
   const baseOpts = {
     responsive:true, animation:{duration:900,easing:'easeOutQuart'},
@@ -600,7 +612,7 @@ function buildLoanCard(l, i, compact=false) {
   const uid = `${i}-${compact?'d':'l'}`;
   const fullyPaid = isLoanFullyPaid(l);
   return `
-  <div class="loan-card${fullyPaid ? ' fully-paid' : ''}" style="animation-delay:${i*0.07}s">
+  <div class="loan-card${fullyPaid ? ' fully-paid' : ''}${isNewCard(l) ? ' is-new' : ''}" style="animation-delay:${document.body.classList.contains('settled') ? 0 : i*0.07}s">
     <div class="loan-card-accent"></div>
 
     <div class="loan-top">
@@ -650,14 +662,14 @@ function buildLoanCard(l, i, compact=false) {
         <span class="loan-prog-label">${paidCount} of ${l.tenure} EMIs paid</span>
         <span class="loan-prog-pct">${pct}%</span>
       </div>
-      <div class="prog-track"><div class="prog-fill" style="width:${pct}%"></div></div>
+      <div class="prog-track"><div class="prog-fill" style="width:${_progPrev[uid] ?? 0}%" data-pct="${pct}" data-uid="${uid}"></div></div>
     </div>
 
     <button class="sch-toggle" onclick="toggleSchedule('${uid}')">
       <i data-lucide="list" style="width:13px;height:13px;"></i>
       Amortization Schedule
     </button>
-    <div class="sch-wrap" id="sch-${uid}">
+    <div class="sch-wrap${openSch.has(uid) ? ' open' : ''}" id="sch-${uid}">
       <div class="sch-row hr">
         <span>Date</span><span>Principal</span><span>Interest</span><span>Balance</span><span>Month</span><span></span>
       </div>
@@ -669,21 +681,24 @@ function buildLoanCard(l, i, compact=false) {
 /* ═══════════════════════════════════════
    RING ANIMATION
 ═══════════════════════════════════════ */
+let _ringPrev = 0;
 function animateRing(pct) {
   const ring = document.getElementById('heroRing');
   const label = document.getElementById('ringPct');
   if (!ring || !label) return;
   const circumference = 239;
-  const offset = circumference - (pct / 100) * circumference;
-  ring.style.transition = 'stroke-dashoffset 1.2s cubic-bezier(0.16,1,0.3,1)';
-  ring.style.strokeDashoffset = offset;
-  let cur = 0;
-  const target = Math.round(pct);
-  const step = () => {
-    if (cur < target) { cur++; label.textContent = cur + '%'; requestAnimationFrame(step); }
-    else label.textContent = target + '%';
+  ring.style.transition = reduceMotion ? 'none' : 'stroke-dashoffset 1.2s cubic-bezier(0.22,1,0.36,1)';
+  ring.style.strokeDashoffset = circumference - (pct / 100) * circumference;
+  const from = _ringPrev, to = pct; _ringPrev = pct;
+  cancelAnimationFrame(label._raf);
+  if (reduceMotion || Math.round(from) === Math.round(to)) { label.textContent = Math.round(to) + '%'; return; }
+  const t0 = performance.now();
+  const step = now => {
+    const p = Math.min(1, (now - t0) / 1200), e = 1 - Math.pow(1 - p, 4);
+    label.textContent = Math.round(from + (to - from) * e) + '%';
+    if (p < 1) label._raf = requestAnimationFrame(step);
   };
-  requestAnimationFrame(step);
+  label._raf = requestAnimationFrame(step);
 }
 
 /* ═══════════════════════════════════════
@@ -693,10 +708,37 @@ function isLoanFullyPaid(l) {
   return l.payments.length > 0 && l.payments.every(p => p.paid);
 }
 
+/* Smooth re-render helpers: numbers count from their last value, progress bars grow
+   from where they were, only genuinely new loan cards animate in. */
+const _prevNum = {}, _progPrev = {}, _seen = new Set();
+function loanKey(l) { return l.name + '|' + l.start + '|' + l.amount; }
+function isNewCard(l) { return document.body.classList.contains('settled') && !_seen.has(loanKey(l)); }
+function tweenText(id, to, fmt, dur = 800) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const from = _prevNum[id] ?? 0; _prevNum[id] = to;
+  cancelAnimationFrame(el._raf);
+  if (reduceMotion || from === to) { el.textContent = fmt(to); return; }
+  const t0 = performance.now();
+  const step = now => {
+    const p = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - p, 4);
+    el.textContent = fmt(Math.round(from + (to - from) * e));
+    if (p < 1) el._raf = requestAnimationFrame(step);
+  };
+  el._raf = requestAnimationFrame(step);
+}
+function settle() {
+  if (document.body.classList.contains('settled')) return;
+  clearTimeout(settle._t);
+  settle._t = setTimeout(() => document.body.classList.add('settled'), 1200);
+}
+
 function render() {
   const container = document.getElementById('loans');
   const dash      = document.getElementById('loansDashboard');
-  container.innerHTML = ''; dash.innerHTML = '';
+  const schScroll = {};
+  document.querySelectorAll('.sch-wrap.open').forEach(w => { schScroll[w.id] = w.scrollTop; });
+  let dashHTML = '', listHTML = '';
 
   let totalPaid=0, totalRemaining=0, totalEMIsLeft=0;
   const activeLoans    = loans.filter(l => !isLoanFullyPaid(l));
@@ -709,11 +751,11 @@ function render() {
         <h3>No Loans Yet</h3>
         <p>Add your first loan above to start tracking</p>
       </div>`;
-    container.innerHTML = empty; dash.innerHTML = empty;
+    listHTML = empty; dashHTML = empty;
   } else {
     // Dashboard: only active (unpaid) loans
     if (activeLoans.length === 0) {
-      dash.innerHTML = `
+      dashHTML = `
         <div class="empty-state">
           <span class="empty-icon">🎉</span>
           <h3>All Loans Paid Off!</h3>
@@ -726,7 +768,7 @@ function render() {
         totalPaid      += s.totalPaid;
         totalRemaining += s.remaining;
         totalEMIsLeft  += l.schedule.filter((_,j) => !l.payments[j]?.paid).length;
-        dash.innerHTML += buildLoanCard(l, i, true);
+        dashHTML += buildLoanCard(l, i, true);
       });
     }
 
@@ -738,7 +780,7 @@ function render() {
 
     // Dashboard: show a completed badge if any loans are done
     if (completedLoans.length > 0) {
-      dash.innerHTML += `
+      dashHTML += `
         <div class="completed-badge">
           <span class="completed-badge-icon">✅</span>
           <span><strong>${completedLoans.length}</strong> loan${completedLoans.length>1?'s':''} fully paid — view in <button class="completed-link" onclick="switchTab('loansScreen')">Loans tab</button></span>
@@ -748,24 +790,39 @@ function render() {
     // Loans screen: show ALL loans (active + completed, completed at bottom)
     [...activeLoans, ...completedLoans].forEach(l => {
       const i = loans.indexOf(l);
-      container.innerHTML += buildLoanCard(l, i, false);
+      listHTML += buildLoanCard(l, i, false);
     });
   }
+
+  // One DOM write per list instead of one per card
+  container.innerHTML = listHTML;
+  dash.innerHTML = dashHTML;
+  Object.keys(schScroll).forEach(id => { const w = document.getElementById(id); if (w) w.scrollTop = schScroll[id]; });
+  loans.forEach(l => _seen.add(loanKey(l)));
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    document.querySelectorAll('.prog-fill[data-pct]').forEach(f => {
+      f.style.width = f.dataset.pct + '%';
+      _progPrev[f.dataset.uid] = +f.dataset.pct;
+    });
+  }));
 
   const totalMonthlyEMI = loans.reduce((sum,l) => sum + (l.payments.some(p=>!p.paid) ? l.emi : 0), 0);
   const totalBorrowed   = loans.reduce((sum,l) => sum + l.amount, 0);
   const paidPct = totalBorrowed > 0 ? (totalPaid / totalBorrowed) * 100 : 0;
+  const inr = v => '₹' + v.toLocaleString('en-IN');
 
-  document.getElementById('totalPaid').textContent       = '₹'+totalPaid.toLocaleString('en-IN');
-  document.getElementById('totalRemaining').textContent  = '₹'+totalRemaining.toLocaleString('en-IN');
-  document.getElementById('monthsLeft').textContent      = totalEMIsLeft;
-  document.getElementById('debtFreeDate').textContent    = getDebtFreeDate();
-  document.getElementById('totalMonthlyEMI').textContent = totalMonthlyEMI.toLocaleString('en-IN');
+  tweenText('totalPaid', totalPaid, inr);
+  tweenText('totalRemaining', totalRemaining, inr);
+  tweenText('monthsLeft', totalEMIsLeft, v => String(v));
+  document.getElementById('debtFreeDate').textContent = getDebtFreeDate();
+  tweenText('totalMonthlyEMI', totalMonthlyEMI, v => v.toLocaleString('en-IN'));
 
   animateRing(paidPct);
-  drawCharts();
+  // Charts only redraw when Analytics is on screen (switching to it draws them)
+  if (document.getElementById('chartsScreen').classList.contains('active')) drawCharts();
   lucide.createIcons();
-  setTimeout(initTilt, 200);
+  initTilt();
+  settle();
 }
 
 /* ═══════════════════════════════════════
